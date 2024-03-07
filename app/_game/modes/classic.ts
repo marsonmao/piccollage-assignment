@@ -1,4 +1,4 @@
-import { MineSweeperCore } from "../core";
+import { MineSweeperCore, CellState } from "../core";
 import type { Cell } from "../core";
 
 export class MineSweeperClassicMode {
@@ -80,7 +80,7 @@ export class MineSweeperClassicMode {
           continue;
         }
 
-        if (states[r][c] === this.core.FLAGGED) {
+        if (states[r][c] === CellState.FLAGGED) {
           ++flagCount;
         }
       }
