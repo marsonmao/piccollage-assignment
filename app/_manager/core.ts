@@ -12,7 +12,7 @@ namespace CellState {
   export type Opened = 30;
   export type All = Closed | Flagged | Opened;
 }
-export class MineSweeperManager {
+export class MineSweeperCore {
   private readonly rowSize: number;
   private readonly columnSize: number;
   private readonly cellCount: number;

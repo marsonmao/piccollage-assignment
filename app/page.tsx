@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { MineSweeperManager } from "./_manager";
+import { MineSweeperCore } from "./_manager";
 
-const msm = new MineSweeperManager({
+const msm = new MineSweeperCore({
   rowSize: 4,
   columnSize: 4,
   maxLifeCount: 1,
