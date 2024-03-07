@@ -49,14 +49,6 @@ export class MineSweeperCore {
       .map(() => new Array<CellState.All>(this.columnSize).fill(this.CLOSED));
   }
 
-  private debug_print = () => {
-    for (let r = 0; r < this.rowSize; ++r) {
-      for (let c = 0; c < this.columnSize; ++c) {
-        console.log({ r, c }, this.cellMineDatas[r][c]);
-      }
-    }
-  };
-
   deployMinesFromCell = ({ row, column }: Cell, mineCount: number) => {
     this.validateCell({ row, column });
     if (mineCount <= 0 || mineCount >= this.cellCount) {
@@ -208,7 +200,7 @@ export class MineSweeperCore {
 
   getCellStates = () => this.cellStates;
 
-  private validateCell = ({ row, column }: Cell) => {
+  validateCell = ({ row, column }: Cell) => {
     if (
       row < 0 ||
       row >= this.rowSize ||
