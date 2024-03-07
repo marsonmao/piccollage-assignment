@@ -29,6 +29,7 @@ export class MineSweeperCore {
   readonly CLOSED: CellState.Closed = 10;
   readonly FLAGGED: CellState.Flagged = 20;
   readonly OPENED: CellState.Opened = 30;
+  private openedCount: number = 0;
 
   constructor(props: {
     rowSize: number;
@@ -102,6 +103,7 @@ export class MineSweeperCore {
     } else if (prev === this.CLOSED) {
       if (this.cellMineDatas[row][column] === this.MINE) {
         this.cellStates[row][column] = this.OPENED;
+        ++this.openedCount;
         --this.lifeCount;
       } else {
         this.floodOpenFromCell({ row, column });
@@ -130,6 +132,7 @@ export class MineSweeperCore {
       }
 
       this.cellStates[row][column] = this.OPENED;
+      ++this.openedCount;
 
       if (this.cellMineDatas[row][column] === 0) {
         for (let r = row - 1; r <= row + 1; ++r) {
@@ -170,8 +173,8 @@ export class MineSweeperCore {
         return;
       }
 
-      for (let r = row - 1; r >= row + 1; ++r) {
-        for (let c = column - 1; c >= column + 1; ++c) {
+      for (let r = row - 1; r <= row + 1; ++r) {
+        for (let c = column - 1; c <= column + 1; ++c) {
           try {
             this.openCell({ row: r, column: c });
           } catch {
@@ -179,7 +182,6 @@ export class MineSweeperCore {
           }
         }
       }
-
       return;
     } else if (prev === this.FLAGGED) {
       return;
@@ -199,6 +201,10 @@ export class MineSweeperCore {
   getCellMineDatas = () => this.cellMineDatas;
 
   getCellStates = () => this.cellStates;
+
+  getOpenedCount = () => this.openedCount;
+
+  getCellCount = () => this.cellCount;
 
   validateCell = ({ row, column }: Cell) => {
     if (

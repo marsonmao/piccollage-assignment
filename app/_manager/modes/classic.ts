@@ -3,15 +3,24 @@ import type { Cell } from "../core";
 
 export class MineSweeperClassicMode {
   private core: MineSweeperCore;
-  private onGameEnd: () => void;
+  private onGameWin: () => void;
+  private onGameLost: () => void;
+  private mineCount: number = 0;
 
-  constructor({ onGameEnd }: { onGameEnd: () => void }) {
+  constructor({
+    onGameWin,
+    onGameEnd,
+  }: {
+    onGameWin: () => void;
+    onGameEnd: () => void;
+  }) {
     this.core = new MineSweeperCore({
       rowSize: 1,
       columnSize: 1,
       maxLifeCount: 1,
     });
-    this.onGameEnd = onGameEnd;
+    this.onGameWin = onGameWin;
+    this.onGameLost = onGameEnd;
   }
 
   startGame = ({
@@ -29,18 +38,27 @@ export class MineSweeperClassicMode {
       maxLifeCount: 1,
     });
     this.core.deployMinesFromCell(cell, mineCount);
+    this.mineCount = mineCount;
   };
 
-  isGameEnd = () => {
+  private isGameWin = () => {
+    return (
+      this.core.getOpenedCount() === this.core.getCellCount() - this.mineCount
+    );
+  };
+
+  private isGameLost = () => {
     return this.core.getLifeCount() <= 0;
+  };
+
+  private checkGameEnd = () => {
+    if (this.isGameLost()) this.onGameLost();
+    else if (this.isGameWin()) this.onGameWin();
   };
 
   clickCell = (cell: Cell) => {
     this.core.openCell(cell);
-
-    if (this.isGameEnd()) {
-      this.onGameEnd();
-    }
+    this.checkGameEnd();
   };
 
   flagCell = (cell: Cell) => this.core.flagCell(cell);
@@ -48,23 +66,34 @@ export class MineSweeperClassicMode {
   clearAdjacentCells = ({ row, column }: Cell) => {
     this.core.validateCell({ row, column });
 
+    const datas = this.core.getCellMineDatas();
+    if (!(datas[row][column] >= 1)) {
+      return;
+    }
+
     const states = this.core.getCellStates();
     let flagCount = 0;
     for (let r = row - 1; r <= row + 1; ++r) {
       for (let c = column - 1; c <= column + 1; ++c) {
+        try {
+          this.core.validateCell({ row: r, column: c });
+        } catch {
+          continue;
+        }
+
         if (states[r][c] === this.core.FLAGGED) {
           ++flagCount;
         }
       }
     }
-
-    const datas = this.core.getCellMineDatas();
     if (flagCount === datas[row][column]) {
       this.core.clearAdjacentCells({ row, column });
     }
 
-    if (this.isGameEnd()) {
-      this.onGameEnd();
-    }
+    this.checkGameEnd();
   };
+
+  getCellStates = () => this.core.getCellStates();
+
+  getCellMineDatas = () => this.core.getCellMineDatas();
 }
