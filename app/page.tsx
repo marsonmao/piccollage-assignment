@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { MineSweeperClassicMode, CellState, MineData } from "./_game";
+import { MineSweeperClassicMode, CellState, MineData, config } from "./_game";
 
 export default function Home() {
   const onGameLost = useCallback(() => {
@@ -30,15 +30,19 @@ export default function Home() {
     }
   }
 
+  const easy = config.classic.boards[0];
+  const { row, column, mineCount, displayName } = easy;
+
   return (
     <div>
-      <h1>{notification || "Playing"}</h1>
+      <h1>{notification || `Playing mode: ${displayName}`}</h1>
       <button
         onClick={() => {
+          // TODO this is a reset
           game.startGame({
             cell: { row: 0, column: 0 },
-            size: { row: 8, column: 8 },
-            mineCount: 6,
+            size: { row, column },
+            mineCount,
           });
           rerender((r) => ++r);
           setNotification("");
@@ -66,6 +70,8 @@ export default function Home() {
                     data-row={rowIndex}
                     data-column={columnIndex}
                     onClick={(e) => {
+                      // TODO if first click, this should "startGame"
+
                       const { row, column } = e.currentTarget.dataset;
                       game.clickCell({
                         row: Number(row),

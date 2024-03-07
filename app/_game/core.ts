@@ -73,10 +73,11 @@ export class MineSweeperCore {
       for (let c = 0; c < this.columnSize; ++c) {
         if (this.cellMineDatas[r][c] === MineData.MINE) continue;
 
-        this.cellMineDatas[r][c] = this.calculateAdjacentMineCount({
-          row: r,
-          column: c,
-        });
+        this.cellMineDatas[r][c] = this.calculateAdjacentCount(
+          { row: r, column: c },
+          this.cellMineDatas,
+          MineData.MINE
+        ) as MineData.MineCount;
       }
     }
   };
@@ -162,20 +163,11 @@ export class MineSweeperCore {
         return;
       }
 
-      let flagCount = 0;
-      for (let r = row - 1; r <= row + 1; ++r) {
-        for (let c = column - 1; c <= column + 1; ++c) {
-          try {
-            this.validateCell({ row: r, column: c });
-          } catch {
-            continue;
-          }
-
-          if (this.cellStates[r][c] === CellState.FLAGGED) {
-            ++flagCount;
-          }
-        }
-      }
+      const flagCount = this.calculateAdjacentCount(
+        { row, column },
+        this.cellStates,
+        CellState.FLAGGED
+      );
       if (flagCount !== this.cellMineDatas[row][column]) {
         return;
       }
@@ -207,7 +199,7 @@ export class MineSweeperCore {
 
   getCellCount = () => this.cellCount;
 
-  validateCell = ({ row, column }: Cell) => {
+  private validateCell = ({ row, column }: Cell) => {
     if (
       row < 0 ||
       row >= this.rowSize ||
@@ -218,12 +210,14 @@ export class MineSweeperCore {
     }
   };
 
-  private calculateAdjacentMineCount = ({
-    row,
-    column,
-  }: Cell): MineData.MineCount => {
-    let result: MineData.MineCount = 0;
+  private calculateAdjacentCount = (
+    cell: Cell,
+    data: Array<Array<unknown>>,
+    target: unknown
+  ): number => {
+    let result = 0;
 
+    const { row, column } = cell;
     for (let r = row - 1; r <= row + 1; ++r) {
       for (let c = column - 1; c <= column + 1; ++c) {
         if (r === row && c === column) continue;
@@ -234,10 +228,10 @@ export class MineSweeperCore {
           continue;
         }
 
-        if (this.cellMineDatas[r][c] === MineData.MINE) ++result;
+        if (data[r][c] === target) ++result;
       }
     }
 
-    return result as MineData.MineCount;
+    return result;
   };
 }
