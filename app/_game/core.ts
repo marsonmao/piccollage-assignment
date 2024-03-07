@@ -4,6 +4,8 @@ export namespace MineData {
   export type Mine = -1;
   export type MineCount = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   export type All = MineCount | Mine;
+
+  export const MINE: Mine = -1;
 }
 
 export namespace CellState {
@@ -11,21 +13,20 @@ export namespace CellState {
   export type Flagged = 20;
   export type Opened = 30;
   export type All = Closed | Flagged | Opened;
+
+  export const CLOSED: CellState.Closed = 10;
+  export const FLAGGED: CellState.Flagged = 20;
+  export const OPENED: CellState.Opened = 30;
 }
 export class MineSweeperCore {
   private readonly rowSize: number;
   private readonly columnSize: number;
   private readonly cellCount: number;
-
   private readonly cellMineDatas: Array<Array<MineData.All>>;
-  readonly MINE: MineData.Mine = -1;
-
   private readonly cellStates: Array<
     Array<CellState.Closed | CellState.Flagged | CellState.Opened>
   >;
-  readonly CLOSED: CellState.Closed = 10;
-  readonly FLAGGED: CellState.Flagged = 20;
-  readonly OPENED: CellState.Opened = 30;
+
   private nonMineOpenedCount: number = 0;
   private mineOpenedCount: number = 0;
 
@@ -39,7 +40,9 @@ export class MineSweeperCore {
       .map(() => new Array<MineData.All>(this.columnSize).fill(0));
     this.cellStates = new Array<Array<CellState.All>>(this.rowSize)
       .fill([])
-      .map(() => new Array<CellState.All>(this.columnSize).fill(this.CLOSED));
+      .map(() =>
+        new Array<CellState.All>(this.columnSize).fill(CellState.CLOSED)
+      );
   }
 
   deployMinesFromCell = ({ row, column }: Cell, mineCount: number) => {
@@ -56,19 +59,19 @@ export class MineSweeperCore {
 
         if (
           (rowIndex === row && colIndex === column) ||
-          this.cellMineDatas[rowIndex][colIndex] === this.MINE
+          this.cellMineDatas[rowIndex][colIndex] === MineData.MINE
         ) {
           continue;
         }
 
-        this.cellMineDatas[rowIndex][colIndex] = this.MINE;
+        this.cellMineDatas[rowIndex][colIndex] = MineData.MINE;
         break;
       }
     }
 
     for (let r = 0; r < this.rowSize; ++r) {
       for (let c = 0; c < this.columnSize; ++c) {
-        if (this.cellMineDatas[r][c] === this.MINE) continue;
+        if (this.cellMineDatas[r][c] === MineData.MINE) continue;
 
         this.cellMineDatas[r][c] = this.calculateAdjacentMineCount({
           row: r,
@@ -83,13 +86,13 @@ export class MineSweeperCore {
 
     const prev = this.cellStates[row][column];
 
-    if (prev === this.OPENED) {
+    if (prev === CellState.OPENED) {
       return;
-    } else if (prev === this.FLAGGED) {
+    } else if (prev === CellState.FLAGGED) {
       return;
-    } else if (prev === this.CLOSED) {
-      if (this.cellMineDatas[row][column] === this.MINE) {
-        this.cellStates[row][column] = this.OPENED;
+    } else if (prev === CellState.CLOSED) {
+      if (this.cellMineDatas[row][column] === MineData.MINE) {
+        this.cellStates[row][column] = CellState.OPENED;
         ++this.mineOpenedCount;
       } else {
         this.floodOpenFromCell({ row, column });
@@ -108,16 +111,16 @@ export class MineSweeperCore {
 
     const prev = this.cellStates[row][column];
 
-    if (prev === this.OPENED) {
+    if (prev === CellState.OPENED) {
       return;
-    } else if (prev === this.FLAGGED) {
+    } else if (prev === CellState.FLAGGED) {
       return;
-    } else if (prev === this.CLOSED) {
-      if (this.cellMineDatas[row][column] === this.MINE) {
+    } else if (prev === CellState.CLOSED) {
+      if (this.cellMineDatas[row][column] === MineData.MINE) {
         return;
       }
 
-      this.cellStates[row][column] = this.OPENED;
+      this.cellStates[row][column] = CellState.OPENED;
       ++this.nonMineOpenedCount;
 
       if (this.cellMineDatas[row][column] === 0) {
@@ -138,12 +141,12 @@ export class MineSweeperCore {
     const prev = this.cellStates[row][column];
     let result = prev;
 
-    if (prev === this.OPENED) {
+    if (prev === CellState.OPENED) {
       result = prev;
-    } else if (prev === this.FLAGGED) {
-      result = this.CLOSED;
-    } else if (prev === this.CLOSED) {
-      result = this.FLAGGED;
+    } else if (prev === CellState.FLAGGED) {
+      result = CellState.CLOSED;
+    } else if (prev === CellState.CLOSED) {
+      result = CellState.FLAGGED;
     }
 
     this.cellStates[row][column] = result;
@@ -154,7 +157,7 @@ export class MineSweeperCore {
 
     const prev = this.cellStates[row][column];
 
-    if (prev === this.OPENED) {
+    if (prev === CellState.OPENED) {
       if (!(this.cellMineDatas[row][column] >= 1)) {
         return;
       }
@@ -169,9 +172,9 @@ export class MineSweeperCore {
         }
       }
       return;
-    } else if (prev === this.FLAGGED) {
+    } else if (prev === CellState.FLAGGED) {
       return;
-    } else if (prev === this.CLOSED) {
+    } else if (prev === CellState.CLOSED) {
       return;
     }
   };
@@ -213,7 +216,7 @@ export class MineSweeperCore {
           continue;
         }
 
-        if (this.cellMineDatas[r][c] === this.MINE) ++result;
+        if (this.cellMineDatas[r][c] === MineData.MINE) ++result;
       }
     }
 

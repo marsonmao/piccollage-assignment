@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { MineSweeperClassicMode } from "./_game";
+import { MineSweeperClassicMode, CellState, MineData } from "./_game";
 
 export default function Home() {
   const onGameEnd = useCallback(() => {
@@ -21,9 +21,9 @@ export default function Home() {
   const [notification, setNotification] = useState("");
 
   function getCell(state: number, mineData: number) {
-    if (state === 30) {
+    if (state === CellState.OPENED) {
       return mineData.toString();
-    } else if (state === 20) {
+    } else if (state === CellState.FLAGGED) {
       return "F";
     } else {
       return "[]";
