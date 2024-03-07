@@ -3,23 +3,23 @@ import type { Cell } from "../core";
 
 export class MineSweeperClassicMode {
   private core: MineSweeperCore;
-  private onGameWin: () => void;
+  private onGameWon: () => void;
   private onGameLost: () => void;
   private mineCount: number = 0;
 
   constructor({
-    onGameWin,
-    onGameEnd,
+    onGameWon,
+    onGameLost,
   }: {
-    onGameWin: () => void;
-    onGameEnd: () => void;
+    onGameWon: () => void;
+    onGameLost: () => void;
   }) {
     this.core = new MineSweeperCore({
       rowSize: 1,
       columnSize: 1,
     });
-    this.onGameWin = onGameWin;
-    this.onGameLost = onGameEnd;
+    this.onGameWon = onGameWon;
+    this.onGameLost = onGameLost;
   }
 
   startGame = ({
@@ -39,7 +39,7 @@ export class MineSweeperClassicMode {
     this.mineCount = mineCount;
   };
 
-  private isGameWin = () => {
+  private isGameWon = () => {
     return (
       this.core.getNonMineOpenedCount() ===
       this.core.getCellCount() - this.mineCount
@@ -52,7 +52,7 @@ export class MineSweeperClassicMode {
 
   private checkGameEnd = () => {
     if (this.isGameLost()) this.onGameLost();
-    else if (this.isGameWin()) this.onGameWin();
+    else if (this.isGameWon()) this.onGameWon();
   };
 
   clickCell = (cell: Cell) => {

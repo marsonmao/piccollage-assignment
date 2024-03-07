@@ -47,7 +47,7 @@ export class MineSweeperCore {
 
   deployMinesFromCell = ({ row, column }: Cell, mineCount: number) => {
     this.validateCell({ row, column });
-    if (mineCount <= 0 || mineCount >= this.cellCount) {
+    if (mineCount < 0 || mineCount >= this.cellCount) {
       throw new Error("invalid");
     }
 

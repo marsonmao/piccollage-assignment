@@ -4,17 +4,17 @@ import { useCallback, useEffect, useState } from "react";
 import { MineSweeperClassicMode, CellState, MineData } from "./_game";
 
 export default function Home() {
-  const onGameEnd = useCallback(() => {
+  const onGameLost = useCallback(() => {
     setNotification("GG lose!");
   }, []);
-  const onGameWin = useCallback(() => {
+  const onGameWon = useCallback(() => {
     setNotification("Congrat!!");
   }, []);
   const [game] = useState(
     () =>
       new MineSweeperClassicMode({
-        onGameWin,
-        onGameEnd,
+        onGameWon,
+        onGameLost,
       })
   );
   const [_, rerender] = useState(0);
