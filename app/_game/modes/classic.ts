@@ -63,32 +63,7 @@ export class MineSweeperClassicMode {
   flagCell = (cell: Cell) => this.core.flagCell(cell);
 
   clearAdjacentCells = ({ row, column }: Cell) => {
-    this.core.validateCell({ row, column });
-
-    const datas = this.core.getCellMineDatas();
-    if (!(datas[row][column] >= 1)) {
-      return;
-    }
-
-    const states = this.core.getCellStates();
-    let flagCount = 0;
-    for (let r = row - 1; r <= row + 1; ++r) {
-      for (let c = column - 1; c <= column + 1; ++c) {
-        try {
-          this.core.validateCell({ row: r, column: c });
-        } catch {
-          continue;
-        }
-
-        if (states[r][c] === CellState.FLAGGED) {
-          ++flagCount;
-        }
-      }
-    }
-    if (flagCount === datas[row][column]) {
-      this.core.clearAdjacentCells({ row, column });
-    }
-
+    this.core.clearAdjacentCells({ row, column });
     this.checkGameEnd();
   };
 

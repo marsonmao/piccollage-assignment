@@ -162,6 +162,24 @@ export class MineSweeperCore {
         return;
       }
 
+      let flagCount = 0;
+      for (let r = row - 1; r <= row + 1; ++r) {
+        for (let c = column - 1; c <= column + 1; ++c) {
+          try {
+            this.validateCell({ row: r, column: c });
+          } catch {
+            continue;
+          }
+
+          if (this.cellStates[r][c] === CellState.FLAGGED) {
+            ++flagCount;
+          }
+        }
+      }
+      if (flagCount !== this.cellMineDatas[row][column]) {
+        return;
+      }
+
       for (let r = row - 1; r <= row + 1; ++r) {
         for (let c = column - 1; c <= column + 1; ++c) {
           try {
