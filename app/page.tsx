@@ -5,10 +5,10 @@ import { MineSweeperClassicMode } from "./_manager";
 
 export default function Home() {
   const onGameEnd = useCallback(() => {
-    console.log("GG");
+    setNotification("GG lose!");
   }, []);
   const onGameWin = useCallback(() => {
-    console.log("Congrat!!");
+    setNotification("Congrat!!");
   }, []);
   const [game] = useState(
     () =>
@@ -18,6 +18,7 @@ export default function Home() {
       })
   );
   const [_, rerender] = useState(0);
+  const [notification, setNotification] = useState("");
 
   function getCell(state: number, mineData: number) {
     if (state === 30) {
@@ -31,6 +32,7 @@ export default function Home() {
 
   return (
     <div>
+      <h1>{notification || "Playing"}</h1>
       <button
         onClick={() => {
           game.startGame({
@@ -39,6 +41,7 @@ export default function Home() {
             mineCount: 6,
           });
           rerender((r) => ++r);
+          setNotification("");
         }}
       >
         start

@@ -1,12 +1,12 @@
 export type Cell = { row: number; column: number };
 
-namespace MineData {
+export namespace MineData {
   export type Mine = -1;
   export type MineCount = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
   export type All = MineCount | Mine;
 }
 
-namespace CellState {
+export namespace CellState {
   export type Closed = 10;
   export type Flagged = 20;
   export type Opened = 30;
@@ -16,12 +16,9 @@ export class MineSweeperCore {
   private readonly rowSize: number;
   private readonly columnSize: number;
   private readonly cellCount: number;
-  private readonly maxLifeCount: number;
-  private lifeCount: number;
 
   private readonly cellMineDatas: Array<Array<MineData.All>>;
   readonly MINE: MineData.Mine = -1;
-  private isMinesDeployed = false;
 
   private readonly cellStates: Array<
     Array<CellState.Closed | CellState.Flagged | CellState.Opened>
@@ -29,18 +26,13 @@ export class MineSweeperCore {
   readonly CLOSED: CellState.Closed = 10;
   readonly FLAGGED: CellState.Flagged = 20;
   readonly OPENED: CellState.Opened = 30;
-  private openedCount: number = 0;
+  private nonMineOpenedCount: number = 0;
+  private mineOpenedCount: number = 0;
 
-  constructor(props: {
-    rowSize: number;
-    columnSize: number;
-    maxLifeCount: number;
-  }) {
+  constructor(props: { rowSize: number; columnSize: number }) {
     this.rowSize = props.rowSize;
     this.columnSize = props.columnSize;
     this.cellCount = this.rowSize * this.columnSize;
-    this.maxLifeCount = props.maxLifeCount;
-    this.lifeCount = props.maxLifeCount;
 
     this.cellMineDatas = new Array<Array<MineData.All>>(this.rowSize)
       .fill([])
@@ -55,11 +47,6 @@ export class MineSweeperCore {
     if (mineCount <= 0 || mineCount >= this.cellCount) {
       throw new Error("invalid");
     }
-    if (this.isMinesDeployed) {
-      throw new Error("invalid");
-    }
-
-    this.isMinesDeployed = true;
 
     for (let i = 0; i < mineCount; ++i) {
       while (true) {
@@ -103,8 +90,7 @@ export class MineSweeperCore {
     } else if (prev === this.CLOSED) {
       if (this.cellMineDatas[row][column] === this.MINE) {
         this.cellStates[row][column] = this.OPENED;
-        ++this.openedCount;
-        --this.lifeCount;
+        ++this.mineOpenedCount;
       } else {
         this.floodOpenFromCell({ row, column });
       }
@@ -132,7 +118,7 @@ export class MineSweeperCore {
       }
 
       this.cellStates[row][column] = this.OPENED;
-      ++this.openedCount;
+      ++this.nonMineOpenedCount;
 
       if (this.cellMineDatas[row][column] === 0) {
         for (let r = row - 1; r <= row + 1; ++r) {
@@ -190,19 +176,13 @@ export class MineSweeperCore {
     }
   };
 
-  setMaxLives = (lives: number) => {
-    this.lifeCount = lives;
-  };
-
-  getMaxLifeCount = () => this.maxLifeCount;
-
-  getLifeCount = () => this.lifeCount;
-
   getCellMineDatas = () => this.cellMineDatas;
 
   getCellStates = () => this.cellStates;
 
-  getOpenedCount = () => this.openedCount;
+  getNonMineOpenedCount = () => this.nonMineOpenedCount;
+
+  getMineOpenedCount = () => this.mineOpenedCount;
 
   getCellCount = () => this.cellCount;
 

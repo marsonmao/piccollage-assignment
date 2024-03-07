@@ -17,7 +17,6 @@ export class MineSweeperClassicMode {
     this.core = new MineSweeperCore({
       rowSize: 1,
       columnSize: 1,
-      maxLifeCount: 1,
     });
     this.onGameWin = onGameWin;
     this.onGameLost = onGameEnd;
@@ -35,7 +34,6 @@ export class MineSweeperClassicMode {
     this.core = new MineSweeperCore({
       rowSize: size.row,
       columnSize: size.column,
-      maxLifeCount: 1,
     });
     this.core.deployMinesFromCell(cell, mineCount);
     this.mineCount = mineCount;
@@ -43,12 +41,13 @@ export class MineSweeperClassicMode {
 
   private isGameWin = () => {
     return (
-      this.core.getOpenedCount() === this.core.getCellCount() - this.mineCount
+      this.core.getNonMineOpenedCount() ===
+      this.core.getCellCount() - this.mineCount
     );
   };
 
   private isGameLost = () => {
-    return this.core.getLifeCount() <= 0;
+    return this.core.getMineOpenedCount() >= 1;
   };
 
   private checkGameEnd = () => {
