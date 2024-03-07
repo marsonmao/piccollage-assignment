@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { MineSweeperClassicMode } from "./_manager";
+import { MineSweeperClassicMode } from "./_game";
 
 export default function Home() {
   const onGameEnd = useCallback(() => {
