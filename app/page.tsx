@@ -38,9 +38,7 @@ export default function Home() {
       <h1>{notification || `Playing mode: ${displayName}`}</h1>
       <button
         onClick={() => {
-          // TODO this is a reset
-          game.startGame({
-            cell: { row: 0, column: 0 },
+          game.initGame({
             size: { row, column },
             mineCount,
           });
@@ -70,8 +68,6 @@ export default function Home() {
                     data-row={rowIndex}
                     data-column={columnIndex}
                     onClick={(e) => {
-                      // TODO if first click, this should "startGame"
-
                       const { row, column } = e.currentTarget.dataset;
                       game.clickCell({
                         row: Number(row),

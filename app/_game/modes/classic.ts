@@ -1,4 +1,4 @@
-import { MineSweeperCore, CellState } from "../core";
+import { MineSweeperCore, CellState, MineData } from "../core";
 import type { Cell } from "../core";
 
 export class MineSweeperClassicMode {
@@ -6,6 +6,7 @@ export class MineSweeperClassicMode {
   private onGameWon: () => void;
   private onGameLost: () => void;
   private mineCount: number = 0;
+  private started = false;
 
   constructor({
     onGameWon,
@@ -22,12 +23,10 @@ export class MineSweeperClassicMode {
     this.onGameLost = onGameLost;
   }
 
-  startGame = ({
-    cell,
+  initGame = ({
     size,
     mineCount,
   }: {
-    cell: Cell;
     size: { row: number; column: number };
     mineCount: number;
   }) => {
@@ -35,8 +34,17 @@ export class MineSweeperClassicMode {
       rowSize: size.row,
       columnSize: size.column,
     });
-    this.core.deployMinesFromCell(cell, mineCount);
+    this.core.deployMines(mineCount);
     this.mineCount = mineCount;
+    this.started = false;
+  };
+
+  private startGame = (cell: Cell) => {
+    this.core.validateCell(cell);
+
+    if (this.core.getCellMineDatas()[cell.row][cell.column] === MineData.MINE) {
+      this.core.swapMineWithFirstNonMine(cell);
+    }
   };
 
   private isGameWon = () => {
@@ -56,6 +64,11 @@ export class MineSweeperClassicMode {
   };
 
   clickCell = (cell: Cell) => {
+    if (!this.started) {
+      this.started = true;
+      this.startGame(cell);
+    }
+
     this.core.openCell(cell);
     this.checkGameEnd();
   };
