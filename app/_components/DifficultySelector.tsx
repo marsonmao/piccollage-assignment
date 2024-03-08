@@ -1,5 +1,5 @@
 import { Button } from "@/app/_components";
-import { config } from "@/app/_game";
+import { config } from "@/app/_react_game";
 
 export function DifficultySelector<Type extends keyof typeof config>({
   className,

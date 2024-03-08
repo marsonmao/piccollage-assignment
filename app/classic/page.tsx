@@ -6,7 +6,8 @@ import {
   DifficultySelector,
   Link,
 } from "@/app/_components";
-import { Cell, config, MineSweeperClassicMode } from "@/app/_game";
+import { Cell, MineSweeperClassicMode } from "@/app/_game";
+import { config } from "@/app/_react_game";
 import {
   ComponentProps,
   MouseEventHandler,
