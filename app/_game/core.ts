@@ -1,3 +1,5 @@
+import { exhaustiveCheck } from "@/app/_utils";
+
 export type Cell = { row: number; column: number };
 
 export namespace MineData {
@@ -41,7 +43,7 @@ export class MineSweeperCore {
     this.cellStates = new Array<Array<CellState.All>>(this.rowSize)
       .fill([])
       .map(() =>
-        new Array<CellState.All>(this.columnSize).fill(CellState.CLOSED)
+        new Array<CellState.All>(this.columnSize).fill(CellState.CLOSED),
       );
   }
 
@@ -71,7 +73,7 @@ export class MineSweeperCore {
         this.cellMineDatas[r][c] = this.calculateAdjacentCount(
           { row: r, column: c },
           this.cellMineDatas,
-          MineData.MINE
+          MineData.MINE,
         ) as MineData.MineCount;
       }
     }
@@ -110,7 +112,7 @@ export class MineSweeperCore {
         this.calculateAdjacentCount(
           mineCell,
           this.cellMineDatas,
-          MineData.MINE
+          MineData.MINE,
         ) as MineData.MineCount;
 
       for (let r = firstNonMine.row - 1; r <= firstNonMine.row + 1; ++r) {
@@ -128,7 +130,7 @@ export class MineSweeperCore {
           this.cellMineDatas[r][c] = this.calculateAdjacentCount(
             { row: r, column: c },
             this.cellMineDatas,
-            MineData.MINE
+            MineData.MINE,
           ) as MineData.MineCount;
         }
       }
@@ -140,20 +142,26 @@ export class MineSweeperCore {
 
     const prev = this.cellStates[row][column];
 
-    if (prev === CellState.OPENED) {
-      return;
-    } else if (prev === CellState.FLAGGED) {
-      return;
-    } else if (prev === CellState.CLOSED) {
-      if (this.cellMineDatas[row][column] === MineData.MINE) {
-        this.cellStates[row][column] = CellState.OPENED;
-        ++this.mineOpenedCount;
-      } else {
-        this.floodOpenFromCell({ row, column });
-      }
+    switch (prev) {
+      case CellState.CLOSED: {
+        if (this.cellMineDatas[row][column] === MineData.MINE) {
+          this.cellStates[row][column] = CellState.OPENED;
+          ++this.mineOpenedCount;
+        } else {
+          this.floodOpenFromCell({ row, column });
+        }
 
-      return;
+        return;
+      }
+      case CellState.FLAGGED: {
+        return;
+      }
+      case CellState.OPENED: {
+        return;
+      }
     }
+
+    exhaustiveCheck({ value: prev });
   };
 
   private floodOpenFromCell = ({ row, column }: Cell) => {
@@ -165,45 +173,56 @@ export class MineSweeperCore {
 
     const prev = this.cellStates[row][column];
 
-    if (prev === CellState.OPENED) {
-      return;
-    } else if (prev === CellState.FLAGGED) {
-      return;
-    } else if (prev === CellState.CLOSED) {
-      if (this.cellMineDatas[row][column] === MineData.MINE) {
-        return;
-      }
+    switch (prev) {
+      case CellState.CLOSED: {
+        if (this.cellMineDatas[row][column] === MineData.MINE) {
+          return;
+        }
 
-      this.cellStates[row][column] = CellState.OPENED;
-      ++this.nonMineOpenedCount;
+        this.cellStates[row][column] = CellState.OPENED;
+        ++this.nonMineOpenedCount;
 
-      if (this.cellMineDatas[row][column] === 0) {
-        for (let r = row - 1; r <= row + 1; ++r) {
-          for (let c = column - 1; c <= column + 1; ++c) {
-            this.floodOpenFromCell({ row: r, column: c });
+        if (this.cellMineDatas[row][column] === 0) {
+          for (let r = row - 1; r <= row + 1; ++r) {
+            for (let c = column - 1; c <= column + 1; ++c) {
+              this.floodOpenFromCell({ row: r, column: c });
+            }
           }
         }
-      }
 
-      return;
+        return;
+      }
+      case CellState.FLAGGED: {
+        return;
+      }
+      case CellState.OPENED: {
+        return;
+      }
     }
+
+    exhaustiveCheck({ value: prev });
   };
 
   flagCell = ({ row, column }: Cell) => {
     this.validateCell({ row, column });
 
     const prev = this.cellStates[row][column];
-    let result = prev;
 
-    if (prev === CellState.OPENED) {
-      result = prev;
-    } else if (prev === CellState.FLAGGED) {
-      result = CellState.CLOSED;
-    } else if (prev === CellState.CLOSED) {
-      result = CellState.FLAGGED;
+    switch (prev) {
+      case CellState.CLOSED: {
+        this.cellStates[row][column] = CellState.FLAGGED;
+        return;
+      }
+      case CellState.FLAGGED: {
+        this.cellStates[row][column] = CellState.CLOSED;
+        return;
+      }
+      case CellState.OPENED: {
+        return;
+      }
     }
 
-    this.cellStates[row][column] = result;
+    exhaustiveCheck({ value: prev });
   };
 
   clearAdjacentCells = ({ row, column }: Cell) => {
@@ -211,35 +230,43 @@ export class MineSweeperCore {
 
     const prev = this.cellStates[row][column];
 
-    if (prev === CellState.OPENED) {
-      if (!(this.cellMineDatas[row][column] >= 1)) {
+    switch (prev) {
+      case CellState.CLOSED: {
+        this.cellStates[row][column] = CellState.FLAGGED;
         return;
       }
-
-      const flagCount = this.calculateAdjacentCount(
-        { row, column },
-        this.cellStates,
-        CellState.FLAGGED
-      );
-      if (flagCount !== this.cellMineDatas[row][column]) {
+      case CellState.FLAGGED: {
+        this.cellStates[row][column] = CellState.CLOSED;
         return;
       }
+      case CellState.OPENED: {
+        if (!(this.cellMineDatas[row][column] >= 1)) {
+          return;
+        }
 
-      for (let r = row - 1; r <= row + 1; ++r) {
-        for (let c = column - 1; c <= column + 1; ++c) {
-          try {
-            this.openCell({ row: r, column: c });
-          } catch {
-            continue;
+        const flagCount = this.calculateAdjacentCount(
+          { row, column },
+          this.cellStates,
+          CellState.FLAGGED,
+        );
+        if (flagCount !== this.cellMineDatas[row][column]) {
+          return;
+        }
+
+        for (let r = row - 1; r <= row + 1; ++r) {
+          for (let c = column - 1; c <= column + 1; ++c) {
+            try {
+              this.openCell({ row: r, column: c });
+            } catch {
+              continue;
+            }
           }
         }
+        return;
       }
-      return;
-    } else if (prev === CellState.FLAGGED) {
-      return;
-    } else if (prev === CellState.CLOSED) {
-      return;
     }
+
+    exhaustiveCheck({ value: prev });
   };
 
   getCellMineDatas = () => this.cellMineDatas;
@@ -266,7 +293,7 @@ export class MineSweeperCore {
   private calculateAdjacentCount = (
     cell: Cell,
     data: Array<Array<unknown>>,
-    target: unknown
+    target: unknown,
   ): number => {
     let result = 0;
 
