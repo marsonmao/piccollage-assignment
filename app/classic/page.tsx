@@ -110,7 +110,7 @@ export default function Home() {
   return (
     <div className="w-full h-full flex justify-center items-center flex-col p-2">
       <div className="w-full flex justify-center items-center flex-row gap-1">
-        <Link href="/">Home</Link>
+        <Link href="/">⬅️ Home</Link>
         <DifficultySelector
           difficulties={config.classic.boards}
           activeDifficultyIndex={difficultyIndex}
