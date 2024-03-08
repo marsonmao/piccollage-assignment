@@ -1,6 +1,11 @@
 "use client";
 
-import { Board, Button, Cell as CellComponent, Link } from "@/app/_components";
+import {
+  Board,
+  Cell as CellComponent,
+  DifficultySelector,
+  Link,
+} from "@/app/_components";
 import { Cell, config, MineSweeperClassicMode } from "@/app/_game";
 import {
   ComponentProps,
@@ -99,39 +104,20 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full h-full flex justify-center items-center flex-col">
+    <div className="w-full h-full flex justify-center items-center flex-col p-2">
       <div className="w-full flex justify-center items-center flex-row gap-1">
         <Link href="/">Home</Link>
       </div>
-      <div className="w-full flex justify-center items-center flex-row gap-1">
-        {difficulties.map((d, index) => {
-          const { id, displayName } = d;
-          return (
-            <Button
-              className={
-                index === difficultyIndex
-                  ? "[&&]:text-gray-50 [&&]:bg-black"
-                  : ""
-              }
-              key={id}
-              data-index={index}
-              onClick={(e) => {
-                const nextDifficultyIndex = Number(
-                  e.currentTarget.dataset.index,
-                );
-                initGame({ ...difficulties[nextDifficultyIndex] });
-                setDifficultyIndex(nextDifficultyIndex);
-                rerender((r) => ++r);
-              }}
-            >
-              {displayName}
-            </Button>
-          );
-        })}
-      </div>
-      <span className="h-8 leading-8 align-middle">
-        {notification || "..."}
-      </span>
+      <DifficultySelector
+        className="m-2"
+        difficulties={config.classic.boards}
+        activeDifficultyIndex={difficultyIndex}
+        onDifficultySelect={(nextIndex) => {
+          initGame({ ...difficulties[nextIndex] });
+          setDifficultyIndex(nextIndex);
+        }}
+      />
+      <span className="align-middle m-2">{notification || "..."}</span>
       <Board
         onContextMenu={disableContextMenu}
         rowSize={boardRowSize}
