@@ -14,7 +14,7 @@ const difficulties = config.classic.boards;
 
 export default function Home() {
   const [_, rerender] = useState(0);
-  const [notification, setNotification] = useState("");
+  const [headlineText, setHeadlineText] = useState("");
   const [isEnded, setIsEnded] = useState(false);
   const [difficultyIndex, setDifficultyIndex] = useState(0);
   const currentDifficulty = difficulties[difficultyIndex];
@@ -23,11 +23,11 @@ export default function Home() {
     (function create() {
       const game = new MineSweeperClassicMode({
         onGameWon: () => {
-          setNotification("You have won! -- restart?");
+          setHeadlineText("____YOU HAVE WON____");
           setIsEnded(true);
         },
         onGameLost: () => {
-          setNotification("Good game -- restart?");
+          setHeadlineText("...GOOD GAME...");
           setIsEnded(true);
         },
       });
@@ -85,14 +85,13 @@ export default function Home() {
       mineCount: nextDifficulty.mineCount,
     });
 
-    setNotification("");
+    setHeadlineText("...");
     setIsEnded(false);
     setDifficultyIndex(nextIndex);
   }, []);
 
   const boardRowSize = game.current.getCellMineDatas().length;
   const boardColumnSize = game.current.getCellMineDatas()[0].length;
-  const headlineText = notification || "...";
 
   return (
     <div className="w-full h-full flex justify-center items-center flex-col p-2">
