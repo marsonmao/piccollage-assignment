@@ -1,8 +1,12 @@
 export function exhaustiveCheck({
+  value,
   message,
 }: {
   value: never;
-  message: string;
+  message?: string;
 }) {
-  throw new Error(message);
+  throw new Error(
+    message ??
+      `${value} should be handled by corresponding "switch" statements`,
+  );
 }
