@@ -1,4 +1,4 @@
-export function exhaustiveCheck({
+export function exhaustiveCaseCheck({
   value,
   message,
 }: {

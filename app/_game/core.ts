@@ -1,4 +1,4 @@
-import { exhaustiveCheck } from "@/app/_utils";
+import { exhaustiveCaseCheck } from "@/app/_utils";
 
 export type Cell = { row: number; column: number };
 
@@ -161,7 +161,7 @@ export class MineSweeperCore {
       }
     }
 
-    exhaustiveCheck({ value: prev });
+    exhaustiveCaseCheck({ value: prev });
   };
 
   private floodOpenFromCell = ({ row, column }: Cell) => {
@@ -200,7 +200,7 @@ export class MineSweeperCore {
       }
     }
 
-    exhaustiveCheck({ value: prev });
+    exhaustiveCaseCheck({ value: prev });
   };
 
   flagCell = ({ row, column }: Cell) => {
@@ -222,7 +222,7 @@ export class MineSweeperCore {
       }
     }
 
-    exhaustiveCheck({ value: prev });
+    exhaustiveCaseCheck({ value: prev });
   };
 
   clearAdjacentCells = ({ row, column }: Cell) => {
@@ -266,7 +266,7 @@ export class MineSweeperCore {
       }
     }
 
-    exhaustiveCheck({ value: prev });
+    exhaustiveCaseCheck({ value: prev });
   };
 
   getCellMineDatas = () => this.cellMineDatas;

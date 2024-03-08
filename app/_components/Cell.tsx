@@ -1,6 +1,6 @@
 import { Closed, Flagged, Mine, Opened } from "@/app/_components/cells";
 import { CellState, MineData } from "@/app/_game";
-import { exhaustiveCheck } from "@/app/_utils";
+import { exhaustiveCaseCheck } from "@/app/_utils";
 import { ComponentProps } from "react";
 
 type CellProps = {
@@ -22,7 +22,10 @@ function renderCell({ state, data, ...rest }: CellProps) {
       return <Opened {...rest} text={data.toString()} />;
     }
   }
-  exhaustiveCheck({ value: state, message: `Unhandled state found: ${state}` });
+  exhaustiveCaseCheck({
+    value: state,
+    message: `Unhandled state found: ${state}`,
+  });
 }
 
 export function Cell(props: ComponentProps<"div"> & CellProps) {
