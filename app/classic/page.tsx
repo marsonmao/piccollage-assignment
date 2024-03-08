@@ -48,51 +48,35 @@ export default function Home() {
 
   const getCellProps = useCallback(
     ({ row, column }: Cell) => {
+      function handleUserAction(
+        dataset: DOMStringMap,
+        method: "clickCell" | "flagCell" | "clearAdjacentCells",
+      ) {
+        const { row, column } = dataset;
+        game.current[method]({
+          row: Number(row),
+          column: Number(column),
+        });
+
+        if (!isStarted) {
+          setIsStarted(true);
+          setTimerStart(Date.now());
+        }
+        rerender((r) => ++r);
+      }
+
       const cellProps: ComponentProps<typeof CellComponent> = {
         state: game.current.getCellStates()[row][column],
         data: game.current.getCellMineDatas()[row][column],
         className: isEnded ? "pointer-events-none" : undefined,
         onClick: (e) => {
-          const { row, column } = e.currentTarget.dataset;
-          game.current.clickCell({
-            row: Number(row),
-            column: Number(column),
-          });
-
-          if (!isStarted) {
-            setIsStarted(true);
-            setTimerStart(Date.now());
-            console.log(111);
-          }
-          rerender((r) => ++r);
+          handleUserAction(e.currentTarget.dataset, "clickCell");
         },
         onContextMenu: (e) => {
-          const { row, column } = e.currentTarget.dataset;
-          game.current.flagCell({
-            row: Number(row),
-            column: Number(column),
-          });
-
-          if (!isStarted) {
-            setIsStarted(true);
-            setTimerStart(Date.now());
-            console.log(222);
-          }
-          rerender((r) => ++r);
+          handleUserAction(e.currentTarget.dataset, "flagCell");
         },
         onDoubleClick: (e) => {
-          const { row, column } = e.currentTarget.dataset;
-          game.current.clearAdjacentCells({
-            row: Number(row),
-            column: Number(column),
-          });
-
-          if (!isStarted) {
-            setIsStarted(true);
-            setTimerStart(Date.now());
-            console.log(333);
-          }
-          rerender((r) => ++r);
+          handleUserAction(e.currentTarget.dataset, "clearAdjacentCells");
         },
       };
       return cellProps;
