@@ -1,8 +1,13 @@
 "use client";
 
-import { Button, Link } from "@/app/_components";
-import { CellState, config, MineSweeperClassicMode } from "@/app/_game";
-import { MouseEventHandler, useCallback, useState } from "react";
+import { Board, Button, Cell as CellComponent, Link } from "@/app/_components";
+import { Cell, config, MineSweeperClassicMode } from "@/app/_game";
+import {
+  ComponentProps,
+  MouseEventHandler,
+  useCallback,
+  useState,
+} from "react";
 
 export default function Home() {
   const [notification, setNotification] = useState("");
@@ -48,19 +53,50 @@ export default function Home() {
     setIsEnded(false);
   }
 
-  function getCell(state: number, mineData: number) {
-    if (state === CellState.OPENED) {
-      return mineData.toString();
-    } else if (state === CellState.FLAGGED) {
-      return "F";
-    } else {
-      return "[]";
-    }
-  }
-
   const disableContextMenu: MouseEventHandler = (e) => {
     e.preventDefault();
   };
+
+  const boardRowSize = game.getCellMineDatas().length;
+  const boardColumnSize = game.getCellMineDatas()[0].length;
+
+  function getCellProps({ row, column }: Cell) {
+    const cellProps: ComponentProps<typeof CellComponent> = {
+      state: game.getCellStates()[row][column],
+      data: game.getCellMineDatas()[row][column],
+      onClick: (e) => {
+        if (isEnded) return;
+
+        const { row, column } = e.currentTarget.dataset;
+        game.clickCell({
+          row: Number(row),
+          column: Number(column),
+        });
+        rerender((r) => ++r);
+      },
+      onContextMenu: (e) => {
+        if (isEnded) return;
+
+        const { row, column } = e.currentTarget.dataset;
+        game.flagCell({
+          row: Number(row),
+          column: Number(column),
+        });
+        rerender((r) => ++r);
+      },
+      onDoubleClick: (e) => {
+        if (isEnded) return;
+
+        const { row, column } = e.currentTarget.dataset;
+        game.clearAdjacentCells({
+          row: Number(row),
+          column: Number(column),
+        });
+        rerender((r) => ++r);
+      },
+    };
+    return cellProps;
+  }
 
   return (
     <div className="w-full h-full flex justify-center items-center flex-col">
@@ -97,63 +133,13 @@ export default function Home() {
         {notification || "..."}
       </span>
       <div onContextMenu={disableContextMenu}>
-        {game.getCellStates().map((row, rowIndex) => {
-          const rowElement = (
-            <div key={rowIndex.toString()}>
-              {row.map((cell, columnIndex) => {
-                const cellElement = (
-                  <button
-                    key={columnIndex.toString()}
-                    style={{
-                      userSelect: "none",
-                      width: 24,
-                      height: 24,
-                    }}
-                    data-row={rowIndex}
-                    data-column={columnIndex}
-                    onClick={(e) => {
-                      if (isEnded) return;
-
-                      const { row, column } = e.currentTarget.dataset;
-                      game.clickCell({
-                        row: Number(row),
-                        column: Number(column),
-                      });
-                      rerender((r) => ++r);
-                    }}
-                    onContextMenu={(e) => {
-                      if (isEnded) return;
-
-                      const { row, column } = e.currentTarget.dataset;
-                      game.flagCell({
-                        row: Number(row),
-                        column: Number(column),
-                      });
-                      rerender((r) => ++r);
-                    }}
-                    onDoubleClick={(e) => {
-                      if (isEnded) return;
-
-                      const { row, column } = e.currentTarget.dataset;
-                      game.clearAdjacentCells({
-                        row: Number(row),
-                        column: Number(column),
-                      });
-                      rerender((r) => ++r);
-                    }}
-                  >
-                    {getCell(
-                      cell,
-                      game.getCellMineDatas()[rowIndex][columnIndex],
-                    )}
-                  </button>
-                );
-                return cellElement;
-              })}
-            </div>
-          );
-          return rowElement;
-        })}
+        <Board
+          onContextMenu={disableContextMenu}
+          rowSize={boardRowSize}
+          columnSize={boardColumnSize}
+          CellComponent={CellComponent}
+          getCellProps={getCellProps}
+        />
       </div>
     </div>
   );
