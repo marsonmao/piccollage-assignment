@@ -31,6 +31,7 @@ export class MineSweeperCore {
 
   private nonMineOpenedCount: number = 0;
   private mineOpenedCount: number = 0;
+  private flaggedCount: number = 0;
 
   constructor(props: { rowSize: number; columnSize: number }) {
     this.rowSize = props.rowSize;
@@ -211,10 +212,12 @@ export class MineSweeperCore {
     switch (prev) {
       case CellState.CLOSED: {
         this.cellStates[row][column] = CellState.FLAGGED;
+        ++this.flaggedCount;
         return;
       }
       case CellState.FLAGGED: {
         this.cellStates[row][column] = CellState.CLOSED;
+        --this.flaggedCount;
         return;
       }
       case CellState.OPENED: {
@@ -276,6 +279,8 @@ export class MineSweeperCore {
   getNonMineOpenedCount = () => this.nonMineOpenedCount;
 
   getMineOpenedCount = () => this.mineOpenedCount;
+
+  getFlaggedCount = () => this.flaggedCount;
 
   getCellCount = () => this.cellCount;
 

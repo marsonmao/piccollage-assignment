@@ -83,4 +83,6 @@ export class MineSweeperClassicMode {
   getCellStates = () => this.core.getCellStates();
 
   getCellMineDatas = () => this.core.getCellMineDatas();
+
+  getRemainingMineCount = () => this.mineCount - this.core.getFlaggedCount();
 }
