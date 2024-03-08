@@ -5,6 +5,7 @@ import {
   Cell as CellComponent,
   DifficultySelector,
   Link,
+  MineCount,
   Timer,
 } from "@/app/_components";
 import { Cell, MineSweeperClassicMode } from "@/app/_game";
@@ -131,12 +132,15 @@ export default function Home() {
       </div>
       <div className="w-2/6 flex justify-center items-center flex-row gap-1 mt-2">
         <Timer
-          className="w-16"
+          className="w-1/4 [&&]:text-end"
           startTimestampMs={timerStart}
           isRunning={isTimerRunning}
         />
-        <div className="text-center w-32">{headlineText}</div>
-        <div className="w-16">MC</div>
+        <div className="w-1/2 text-center">{headlineText}</div>
+        <MineCount
+          className="w-1/4 [&&]:text-start"
+          count={game.current.getRemainingMineCount()}
+        />
       </div>
       <Board
         className="mt-2"
