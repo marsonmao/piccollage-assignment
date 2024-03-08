@@ -1,7 +1,7 @@
 "use client";
 
+import { Link } from "@/app/_components";
 import { CellState, config, MineSweeperClassicMode } from "@/app/_game";
-import Link from "next/link";
 import { MouseEventHandler, useCallback, useState } from "react";
 
 export default function Home() {
@@ -64,7 +64,9 @@ export default function Home() {
 
   return (
     <div className="w-full h-full flex justify-center items-center flex-col">
-      <Link href="/">Home</Link>
+      <div className="w-full flex justify-center items-center flex-row gap-1">
+        <Link href="/">Home</Link>
+      </div>
       <div className="w-full flex justify-center items-center flex-row gap-1">
         {difficulties.map((d, index) => {
           const { id, displayName } = d;
