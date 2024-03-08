@@ -132,15 +132,13 @@ export default function Home() {
       <span className="h-8 leading-8 align-middle">
         {notification || "..."}
       </span>
-      <div onContextMenu={disableContextMenu}>
-        <Board
-          onContextMenu={disableContextMenu}
-          rowSize={boardRowSize}
-          columnSize={boardColumnSize}
-          CellComponent={CellComponent}
-          getCellProps={getCellProps}
-        />
-      </div>
+      <Board
+        onContextMenu={disableContextMenu}
+        rowSize={boardRowSize}
+        columnSize={boardColumnSize}
+        CellComponent={CellComponent}
+        getCellProps={getCellProps}
+      />
     </div>
   );
 }
