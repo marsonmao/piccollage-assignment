@@ -4,6 +4,8 @@ import { exhaustiveCaseCheck } from "@/app/_utils";
 import { ComponentProps } from "react";
 
 type CellProps = ComponentProps<"div"> & {
+  [key: `data-${string}`]: unknown;
+} & {
   state: CellState.All;
   data: MineData.All;
 };

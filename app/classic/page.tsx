@@ -78,6 +78,8 @@ export default function Home() {
         onDoubleClick: (e) => {
           handleUserAction(e.currentTarget.dataset, "clearAdjacentCells");
         },
+        ["data-row"]: row,
+        ["data-column"]: column,
       };
       return cellProps;
     },

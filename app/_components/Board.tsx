@@ -20,8 +20,6 @@ function Row<P>({
     (_, columnIndex) => (
       <CellComponent
         key={columnIndex.toString()}
-        data-row={rowIndex}
-        data-column={columnIndex}
         {...getCellProps({ row: rowIndex, column: columnIndex })}
       />
     ),
