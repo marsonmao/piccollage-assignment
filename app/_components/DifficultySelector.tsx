@@ -18,13 +18,12 @@ export function DifficultySelector<Type extends keyof typeof config>({
     >
       {difficulties.map((d, index) => {
         const { id, displayName } = d;
+        const isActive = index === activeDifficultyIndex;
+        const text = `${isActive ? "🔄️ " : ""}${displayName}`;
+
         return (
           <Button
-            className={
-              index === activeDifficultyIndex
-                ? "[&&]:text-gray-50 [&&]:bg-black"
-                : ""
-            }
+            className={isActive ? "[&&]:text-gray-50 [&&]:bg-black" : ""}
             key={id}
             data-index={index}
             onClick={(e) => {
@@ -32,7 +31,7 @@ export function DifficultySelector<Type extends keyof typeof config>({
               onDifficultySelect(nextDifficultyIndex);
             }}
           >
-            {displayName}
+            {text}
           </Button>
         );
       })}
