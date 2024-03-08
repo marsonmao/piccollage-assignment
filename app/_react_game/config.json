@@ -1,5 +1,10 @@
 {
   "classic": {
+    "headlines": {
+      "initial": "...",
+      "won": "__WOOOOOOOON__",
+      "lost": "...GOOD GAME..."
+    },
     "boards": [
       {
         "id": "g0",
@@ -25,6 +30,11 @@
     ]
   },
   "ignite": {
+    "headlines": {
+      "initial": "...",
+      "won": "__BLAAAAST__",
+      "lost": "...GOOD GAME..."
+    },
     "boards": [
       {
         "id": "g0",

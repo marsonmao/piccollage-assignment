@@ -13,10 +13,11 @@ import { config, disableContextMenu } from "@/app/_react_game";
 import { ComponentProps, useCallback, useRef, useState } from "react";
 
 const difficulties = config.classic.boards;
+const headlines = config.classic.headlines;
 
 export default function Home() {
   const [_, rerender] = useState(0);
-  const [headlineText, setHeadlineText] = useState("...");
+  const [headlineText, setHeadlineText] = useState(headlines.initial);
   const [isStarted, setIsStarted] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
   const [difficultyIndex, setDifficultyIndex] = useState(0);
@@ -26,11 +27,11 @@ export default function Home() {
     (function create() {
       const game = new MineSweeperClassicMode({
         onGameWon: () => {
-          setHeadlineText("____YOU HAVE WON____");
+          setHeadlineText(headlines.won);
           setIsEnded(true);
         },
         onGameLost: () => {
-          setHeadlineText("...GOOD GAME...");
+          setHeadlineText(headlines.lost);
           setIsEnded(true);
         },
       });
@@ -109,7 +110,7 @@ export default function Home() {
       mineCount: nextDifficulty.mineCount,
     });
 
-    setHeadlineText("...");
+    setHeadlineText(headlines.initial);
     setIsStarted(false);
     setTimerStart(Date.now());
     setIsEnded(false);
