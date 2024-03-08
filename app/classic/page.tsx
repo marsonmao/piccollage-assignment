@@ -17,7 +17,6 @@ export default function Home() {
   const [headlineText, setHeadlineText] = useState("");
   const [isEnded, setIsEnded] = useState(false);
   const [difficultyIndex, setDifficultyIndex] = useState(0);
-  const currentDifficulty = difficulties[difficultyIndex];
 
   const game = useRef(
     (function create() {
@@ -31,10 +30,13 @@ export default function Home() {
           setIsEnded(true);
         },
       });
+
+      const initialDifficulty = difficulties[difficultyIndex];
       game.initGame({
-        ...currentDifficulty,
-        size: { ...currentDifficulty },
+        size: { row: initialDifficulty.row, column: initialDifficulty.column },
+        mineCount: initialDifficulty.mineCount,
       });
+
       return game;
     })(),
   );
