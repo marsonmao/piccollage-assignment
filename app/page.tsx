@@ -1,24 +1,47 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { MouseEventHandler, useCallback, useState } from "react";
 import { CellState, config, MineSweeperClassicMode } from "./_game";
 
 export default function Home() {
+  const [notification, setNotification] = useState("");
+  const [_, rerender] = useState(0);
+  const [isEnded, setIsEnded] = useState(false);
+
   const onGameLost = useCallback(() => {
     setNotification("GG lose!");
+    setIsEnded(true);
   }, []);
+
   const onGameWon = useCallback(() => {
     setNotification("Congrat!!");
+    setIsEnded(true);
   }, []);
-  const [game] = useState(
-    () =>
-      new MineSweeperClassicMode({
-        onGameWon,
-        onGameLost,
-      }),
-  );
-  const [_, rerender] = useState(0);
-  const [notification, setNotification] = useState("");
+
+  const easy = config.classic.boards[0];
+  const { row, column, mineCount, displayName } = easy;
+
+  const [game] = useState(() => {
+    const game = new MineSweeperClassicMode({
+      onGameWon,
+      onGameLost,
+    });
+    game.initGame({
+      size: { row, column },
+      mineCount,
+    });
+    return game;
+  });
+
+  function initGame() {
+    game.initGame({
+      size: { row, column },
+      mineCount,
+    });
+    rerender((r) => ++r);
+    setNotification("");
+    setIsEnded(false);
+  }
 
   function getCell(state: number, mineData: number) {
     if (state === CellState.OPENED) {
@@ -30,29 +53,15 @@ export default function Home() {
     }
   }
 
-  const easy = config.classic.boards[0];
-  const { row, column, mineCount, displayName } = easy;
+  const disableContextMenu: MouseEventHandler = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div>
       <h1>{notification || `Playing mode: ${displayName}`}</h1>
-      <button
-        onClick={() => {
-          game.initGame({
-            size: { row, column },
-            mineCount,
-          });
-          rerender((r) => ++r);
-          setNotification("");
-        }}
-      >
-        start
-      </button>
-      <div
-        onContextMenu={(e) => {
-          e.preventDefault();
-        }}
-      >
+      <button onClick={initGame}>New game</button>
+      <div onContextMenu={disableContextMenu}>
         {game.getCellStates().map((row, rowIndex) => {
           const rowElement = (
             <div key={rowIndex.toString()}>
@@ -68,6 +77,8 @@ export default function Home() {
                     data-row={rowIndex}
                     data-column={columnIndex}
                     onClick={(e) => {
+                      if (isEnded) return;
+
                       const { row, column } = e.currentTarget.dataset;
                       game.clickCell({
                         row: Number(row),
@@ -76,6 +87,8 @@ export default function Home() {
                       rerender((r) => ++r);
                     }}
                     onContextMenu={(e) => {
+                      if (isEnded) return;
+
                       const { row, column } = e.currentTarget.dataset;
                       game.flagCell({
                         row: Number(row),
@@ -84,6 +97,8 @@ export default function Home() {
                       rerender((r) => ++r);
                     }}
                     onDoubleClick={(e) => {
+                      if (isEnded) return;
+
                       const { row, column } = e.currentTarget.dataset;
                       game.clearAdjacentCells({
                         row: Number(row),
