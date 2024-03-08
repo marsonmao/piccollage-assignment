@@ -1,0 +1,55 @@
+{
+  "classic": {
+    "boards": [
+      {
+        "id": "g0",
+        "displayName": "Easy",
+        "row": 8,
+        "column": 8,
+        "mineCount": 9
+      },
+      {
+        "id": "g1",
+        "displayName": "Medium",
+        "row": 16,
+        "column": 16,
+        "mineCount": 40
+      },
+      {
+        "id": "g2",
+        "displayName": "Hard",
+        "row": 30,
+        "column": 16,
+        "mineCount": 99
+      }
+    ]
+  },
+  "ignite": {
+    "boards": [
+      {
+        "id": "g0",
+        "displayName": "Easy",
+        "row": 8,
+        "column": 8,
+        "mineCount": 9,
+        "clicks": 32
+      },
+      {
+        "id": "g1",
+        "displayName": "Medium",
+        "row": 16,
+        "column": 16,
+        "mineCount": 40,
+        "clicks": 128
+      },
+      {
+        "id": "g2",
+        "displayName": "Hard",
+        "row": 30,
+        "column": 16,
+        "mineCount": 99,
+        "clicks": 240
+      }
+    ]
+  }
+}
