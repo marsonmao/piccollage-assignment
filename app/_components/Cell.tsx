@@ -3,10 +3,20 @@ import { CellState, MineData } from "@/app/_game";
 import { exhaustiveCaseCheck } from "@/app/_utils";
 import { ComponentProps } from "react";
 
-type CellProps = {
+type CellProps = ComponentProps<"div"> & {
   state: CellState.All;
   data: MineData.All;
 };
+
+const CELL_SIZE = 8;
+
+export const CELL_CLASSES = `
+  inline-flex justify-center items-center\
+  rounded-sm border p-1\
+  cursor-pointer select-none\
+  text-black bg-white\
+  w-${CELL_SIZE} h-${CELL_SIZE}\
+`;
 
 function renderCell({ state, data, ...rest }: CellProps) {
   switch (state) {
@@ -28,6 +38,9 @@ function renderCell({ state, data, ...rest }: CellProps) {
   });
 }
 
-export function Cell(props: ComponentProps<"div"> & CellProps) {
-  return renderCell(props);
+export function Cell({ className, ...rest }: CellProps) {
+  return renderCell({
+    ...rest,
+    className: `${CELL_CLASSES} ${className ?? ""}`,
+  });
 }

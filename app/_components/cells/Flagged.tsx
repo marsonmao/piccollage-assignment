@@ -1,9 +1,8 @@
 import { ComponentProps } from "react";
-import { cellClasses } from "./styles";
 
-export function Flagged(props: ComponentProps<"div">) {
+export function Flagged({ className, ...rest }: ComponentProps<"div">) {
   return (
-    <div className={cellClasses} {...props}>
+    <div className={className} {...rest}>
       {"F"}
     </div>
   );

@@ -1,9 +1,8 @@
 import { ComponentProps } from "react";
-import { cellClasses } from "./styles";
 
-export function Closed(props: ComponentProps<"div">) {
+export function Closed({ className, ...rest }: ComponentProps<"div">) {
   return (
-    <div className={cellClasses} {...props}>
+    <div className={className} {...rest}>
       {"[]"}
     </div>
   );

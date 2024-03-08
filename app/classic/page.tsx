@@ -69,9 +69,8 @@ export default function Home() {
     const cellProps: ComponentProps<typeof CellComponent> = {
       state: game.getCellStates()[row][column],
       data: game.getCellMineDatas()[row][column],
+      className: isEnded ? "pointer-events-none" : undefined,
       onClick: (e) => {
-        if (isEnded) return;
-
         const { row, column } = e.currentTarget.dataset;
         game.clickCell({
           row: Number(row),
@@ -80,8 +79,6 @@ export default function Home() {
         rerender((r) => ++r);
       },
       onContextMenu: (e) => {
-        if (isEnded) return;
-
         const { row, column } = e.currentTarget.dataset;
         game.flagCell({
           row: Number(row),
@@ -90,8 +87,6 @@ export default function Home() {
         rerender((r) => ++r);
       },
       onDoubleClick: (e) => {
-        if (isEnded) return;
-
         const { row, column } = e.currentTarget.dataset;
         game.clearAdjacentCells({
           row: Number(row),
