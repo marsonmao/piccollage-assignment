@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/app/_components";
+import { Button, Link } from "@/app/_components";
 import { CellState, config, MineSweeperClassicMode } from "@/app/_game";
 import { MouseEventHandler, useCallback, useState } from "react";
 
@@ -71,8 +71,12 @@ export default function Home() {
         {difficulties.map((d, index) => {
           const { id, displayName } = d;
           return (
-            <button
-              className={`rounded-md border p-1 ${index === difficultyIndex ? "text-gray-50 bg-black" : ""}`}
+            <Button
+              className={
+                index === difficultyIndex
+                  ? "[&&]:text-gray-50 [&&]:bg-black"
+                  : ""
+              }
               key={id}
               data-index={index}
               onClick={(e) => {
@@ -85,7 +89,7 @@ export default function Home() {
               }}
             >
               {displayName}
-            </button>
+            </Button>
           );
         })}
       </div>
