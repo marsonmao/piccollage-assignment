@@ -1,5 +1,5 @@
-import { MineSweeperCore, CellState, MineData } from "../core";
 import type { Cell } from "../core";
+import { MineData, MineSweeperCore } from "../core";
 
 export class MineSweeperClassicMode {
   private core: MineSweeperCore;

@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { MineSweeperClassicMode, CellState, MineData, config } from "./_game";
+import { useCallback, useState } from "react";
+import { CellState, config, MineSweeperClassicMode } from "./_game";
 
 export default function Home() {
   const onGameLost = useCallback(() => {
@@ -15,7 +15,7 @@ export default function Home() {
       new MineSweeperClassicMode({
         onGameWon,
         onGameLost,
-      })
+      }),
   );
   const [_, rerender] = useState(0);
   const [notification, setNotification] = useState("");
@@ -94,7 +94,7 @@ export default function Home() {
                   >
                     {getCell(
                       cell,
-                      game.getCellMineDatas()[rowIndex][columnIndex]
+                      game.getCellMineDatas()[rowIndex][columnIndex],
                     )}
                   </button>
                 );
