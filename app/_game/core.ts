@@ -50,19 +50,18 @@ export class MineSweeperCore {
       throw new Error("invalid");
     }
 
-    for (let i = 0; i < mineCount; ++i) {
-      while (true) {
-        const mineIndex = Math.round(Math.random() * (this.cellCount - 1));
-        const rowIndex = Math.floor(mineIndex / this.columnSize);
-        const colIndex = mineIndex % this.columnSize;
+    let value = mineCount;
+    while (value > 0) {
+      const mineIndex = Math.round(Math.random() * (this.cellCount - 1));
+      const rowIndex = Math.floor(mineIndex / this.columnSize);
+      const colIndex = mineIndex % this.columnSize;
 
-        if (this.cellMineDatas[rowIndex][colIndex] === MineData.MINE) {
-          continue;
-        }
-
-        this.cellMineDatas[rowIndex][colIndex] = MineData.MINE;
-        break;
+      if (this.cellMineDatas[rowIndex][colIndex] === MineData.MINE) {
+        continue;
       }
+
+      this.cellMineDatas[rowIndex][colIndex] = MineData.MINE;
+      --value;
     }
 
     for (let r = 0; r < this.rowSize; ++r) {
@@ -99,28 +98,39 @@ export class MineSweeperCore {
       return;
     }
 
-    this.cellMineDatas[mineCell.row][mineCell.column] = 0;
-    this.cellMineDatas[firstNonMine.row][firstNonMine.column] = MineData.MINE;
+    // Set initial data
+    {
+      this.cellMineDatas[mineCell.row][mineCell.column] = 0;
+      this.cellMineDatas[firstNonMine.row][firstNonMine.column] = MineData.MINE;
+    }
 
-    this.cellMineDatas[mineCell.row][mineCell.column] =
-      this.calculateAdjacentCount(
-        mineCell,
-        this.cellMineDatas,
-        MineData.MINE
-      ) as MineData.MineCount;
-    for (let r = firstNonMine.row - 1; r <= firstNonMine.row + 1; ++r) {
-      for (let c = firstNonMine.column - 1; c <= firstNonMine.column + 1; ++c) {
-        try {
-          this.validateCell({ row: r, column: c });
-        } catch {
-          continue;
-        }
-
-        this.cellMineDatas[r][c] = this.calculateAdjacentCount(
-          { row: r, column: c },
+    // Refresh data
+    {
+      this.cellMineDatas[mineCell.row][mineCell.column] =
+        this.calculateAdjacentCount(
+          mineCell,
           this.cellMineDatas,
           MineData.MINE
         ) as MineData.MineCount;
+
+      for (let r = firstNonMine.row - 1; r <= firstNonMine.row + 1; ++r) {
+        for (
+          let c = firstNonMine.column - 1;
+          c <= firstNonMine.column + 1;
+          ++c
+        ) {
+          try {
+            this.validateCell({ row: r, column: c });
+          } catch {
+            continue;
+          }
+
+          this.cellMineDatas[r][c] = this.calculateAdjacentCount(
+            { row: r, column: c },
+            this.cellMineDatas,
+            MineData.MINE
+          ) as MineData.MineCount;
+        }
       }
     }
   };
