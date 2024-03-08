@@ -14,7 +14,7 @@ export function DifficultySelector<Type extends keyof typeof config>({
 }) {
   return (
     <div
-      className={`w-full flex justify-center items-center flex-row gap-1 ${className ?? ""}`}
+      className={`flex justify-center items-center flex-row gap-1 ${className ?? ""}`}
     >
       {difficulties.map((d, index) => {
         const { id, displayName } = d;

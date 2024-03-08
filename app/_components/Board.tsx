@@ -30,10 +30,17 @@ function Row<P>({
 }
 
 export function Board<P>(props: ComponentProps<"div"> & BoardProps<P>) {
-  const { rowSize, columnSize, CellComponent, getCellProps, ...rest } = props;
+  const {
+    className,
+    rowSize,
+    columnSize,
+    CellComponent,
+    getCellProps,
+    ...rest
+  } = props;
 
   return (
-    <div {...rest}>
+    <div className={className} {...rest}>
       {Array.from({ length: rowSize }).map((_, rowIndex) => (
         <Row
           key={rowIndex.toString()}
