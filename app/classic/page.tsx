@@ -5,6 +5,7 @@ import {
   Cell as CellComponent,
   DifficultySelector,
   Link,
+  Timer,
 } from "@/app/_components";
 import { Cell, MineSweeperClassicMode } from "@/app/_game";
 import { config, disableContextMenu } from "@/app/_react_game";
@@ -14,9 +15,11 @@ const difficulties = config.classic.boards;
 
 export default function Home() {
   const [_, rerender] = useState(0);
-  const [headlineText, setHeadlineText] = useState("");
+  const [headlineText, setHeadlineText] = useState("...");
+  const [isStarted, setIsStarted] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
   const [difficultyIndex, setDifficultyIndex] = useState(0);
+  const [timerStart, setTimerStart] = useState(0);
 
   const game = useRef(
     (function create() {
@@ -53,6 +56,12 @@ export default function Home() {
             row: Number(row),
             column: Number(column),
           });
+
+          if (!isStarted) {
+            setIsStarted(true);
+            setTimerStart(Date.now());
+            console.log(111);
+          }
           rerender((r) => ++r);
         },
         onContextMenu: (e) => {
@@ -61,6 +70,12 @@ export default function Home() {
             row: Number(row),
             column: Number(column),
           });
+
+          if (!isStarted) {
+            setIsStarted(true);
+            setTimerStart(Date.now());
+            console.log(222);
+          }
           rerender((r) => ++r);
         },
         onDoubleClick: (e) => {
@@ -69,12 +84,18 @@ export default function Home() {
             row: Number(row),
             column: Number(column),
           });
+
+          if (!isStarted) {
+            setIsStarted(true);
+            setTimerStart(Date.now());
+            console.log(333);
+          }
           rerender((r) => ++r);
         },
       };
       return cellProps;
     },
-    [isEnded],
+    [isEnded, isStarted],
   );
 
   const handleDifficultySelect = useCallback<
@@ -88,26 +109,37 @@ export default function Home() {
     });
 
     setHeadlineText("...");
+    setIsStarted(false);
+    setTimerStart(Date.now());
     setIsEnded(false);
     setDifficultyIndex(nextIndex);
   }, []);
 
   const boardRowSize = game.current.getCellMineDatas().length;
   const boardColumnSize = game.current.getCellMineDatas()[0].length;
+  const isTimerRunning = isStarted && !isEnded;
 
   return (
     <div className="w-full h-full flex justify-center items-center flex-col p-2">
       <div className="w-full flex justify-center items-center flex-row gap-1">
         <Link href="/">Home</Link>
+        <DifficultySelector
+          difficulties={config.classic.boards}
+          activeDifficultyIndex={difficultyIndex}
+          onDifficultySelect={handleDifficultySelect}
+        />
       </div>
-      <DifficultySelector
-        className="m-2"
-        difficulties={config.classic.boards}
-        activeDifficultyIndex={difficultyIndex}
-        onDifficultySelect={handleDifficultySelect}
-      />
-      <span className="align-middle m-2">{headlineText}</span>
+      <div className="w-2/6 flex justify-center items-center flex-row gap-1 mt-2">
+        <Timer
+          className="w-16"
+          startTimestampMs={timerStart}
+          isRunning={isTimerRunning}
+        />
+        <div className="text-center w-32">{headlineText}</div>
+        <div className="w-16">MC</div>
+      </div>
       <Board
+        className="mt-2"
         onContextMenu={disableContextMenu}
         rowSize={boardRowSize}
         columnSize={boardColumnSize}
