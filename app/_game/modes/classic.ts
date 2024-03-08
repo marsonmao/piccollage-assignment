@@ -6,7 +6,7 @@ export class MineSweeperClassicMode {
   private onGameWon: () => void;
   private onGameLost: () => void;
   private mineCount: number = 0;
-  private started = false;
+  private firstClicked = false;
 
   constructor({
     onGameWon,
@@ -36,7 +36,7 @@ export class MineSweeperClassicMode {
     });
     this.core.deployMines(mineCount);
     this.mineCount = mineCount;
-    this.started = false;
+    this.firstClicked = false;
   };
 
   private startGame = (cell: Cell) => {
@@ -64,8 +64,8 @@ export class MineSweeperClassicMode {
   };
 
   clickCell = (cell: Cell) => {
-    if (!this.started) {
-      this.started = true;
+    if (!this.firstClicked) {
+      this.firstClicked = true;
       this.startGame(cell);
     }
 
@@ -83,4 +83,6 @@ export class MineSweeperClassicMode {
   getCellStates = () => this.core.getCellStates();
 
   getCellMineDatas = () => this.core.getCellMineDatas();
+
+  getRemainingMineCount = () => this.mineCount - this.core.getFlaggedCount();
 }

@@ -1,5 +1,10 @@
 {
   "classic": {
+    "headlines": {
+      "initial": "...",
+      "won": "__WOOOOOOOON__",
+      "lost": "...GOOD GAME..."
+    },
     "boards": [
       {
         "id": "g0",
@@ -18,13 +23,18 @@
       {
         "id": "g2",
         "displayName": "Hard",
-        "row": 30,
-        "column": 16,
+        "row": 16,
+        "column": 30,
         "mineCount": 99
       }
     ]
   },
   "ignite": {
+    "headlines": {
+      "initial": "...",
+      "won": "__BLAAAAST__",
+      "lost": "...GOOD GAME..."
+    },
     "boards": [
       {
         "id": "g0",
@@ -41,14 +51,6 @@
         "column": 16,
         "mineCount": 40,
         "clicks": 128
-      },
-      {
-        "id": "g2",
-        "displayName": "Hard",
-        "row": 30,
-        "column": 16,
-        "mineCount": 99,
-        "clicks": 240
       }
     ]
   }
