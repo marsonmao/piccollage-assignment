@@ -8,12 +8,13 @@ import {
   Link,
   Timer,
 } from "@/app/_components";
-import { Cell, MineSweeperIgniteMode } from "@/app/_game";
-import { config, disableContextMenu } from "@/app/_react_game";
+import { MineSweeperIgniteMode } from "@/app/_game";
+import { config, disableContextMenu, useCellProps } from "@/app/_react_game";
 import {
   ComponentProps,
   useCallback,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -51,36 +52,34 @@ export default function Home() {
     })(),
   );
 
-  const getCellProps = useCallback(
-    ({ row, column }: Cell) => {
-      function handleUserAction(dataset: DOMStringMap, method: "clickCell") {
-        const { row, column } = dataset;
-        game.current[method]({
-          row: Number(row),
-          column: Number(column),
-        });
-
-        if (!isStarted) {
-          setIsStarted(true);
-          setTimerStart(Date.now());
-        }
-        rerender((r) => ++r);
-      }
-
-      const cellProps: ComponentProps<typeof CellComponent> = {
-        state: game.current.getCellStates()[row][column],
-        data: game.current.getCellMineDatas()[row][column],
-        className: isEnded ? "pointer-events-none" : undefined,
-        onClick: (e) => {
-          handleUserAction(e.currentTarget.dataset, "clickCell");
+  const cellUserActions = useMemo(
+    () => ({
+      onClick: {
+        gameMethod: "clickCell" as const,
+        postUserAction: () => {
+          if (!isStarted) {
+            setIsStarted(true);
+            setTimerStart(Date.now());
+          }
+          rerender((r) => ++r);
         },
-        ["data-row"]: row,
-        ["data-column"]: column,
-      };
-      return cellProps;
-    },
-    [isEnded, isStarted],
+      },
+    }),
+    [isStarted],
   );
+
+  const cellAdditionalProps = useMemo(
+    () => ({
+      className: isEnded ? "pointer-events-none" : undefined,
+    }),
+    [isEnded],
+  );
+
+  const { getCellProps } = useCellProps({
+    game: game.current,
+    userActions: cellUserActions,
+    additionalProps: cellAdditionalProps,
+  });
 
   const handleDifficultySelect = useCallback<
     ComponentProps<typeof DifficultySelector>["onDifficultySelect"]
@@ -101,13 +100,13 @@ export default function Home() {
     setDifficultyIndex(nextIndex);
   }, []);
 
-  useLayoutEffect(() => {
+  useLayoutEffect(function onlyRevealAtClientRender() {
     game.current.revealCells();
     rerender((r) => ++r);
   }, []);
 
-  const boardRowSize = game.current.getCellMineDatas().length;
-  const boardColumnSize = game.current.getCellMineDatas()[0].length;
+  const { row: boardRowSize, column: boardColumnSize } =
+    game.current.getBoardSize();
   const isTimerRunning = isStarted && !isEnded;
 
   return (

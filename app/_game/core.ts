@@ -23,7 +23,6 @@ export namespace CellState {
 export class MineSweeperCore {
   private readonly rowSize: number;
   private readonly columnSize: number;
-  private readonly cellCount: number;
   private readonly cellMineDatas: Array<Array<MineData.All>>;
   private readonly cellStates: Array<
     Array<CellState.Closed | CellState.Flagged | CellState.Opened>
@@ -36,7 +35,6 @@ export class MineSweeperCore {
   constructor(props: { rowSize: number; columnSize: number }) {
     this.rowSize = props.rowSize;
     this.columnSize = props.columnSize;
-    this.cellCount = this.rowSize * this.columnSize;
 
     this.cellMineDatas = new Array<Array<MineData.All>>(this.rowSize)
       .fill([])
@@ -49,40 +47,31 @@ export class MineSweeperCore {
   }
 
   deployMines = (mineCount: number) => {
-    if (mineCount < 0 || mineCount > this.cellCount) {
-      throw new Error("invalid");
+    if (mineCount < 0 || mineCount > this.getCellCount()) {
+      throw new Error(`invalid mine count ${mineCount}`);
     }
 
     let value = mineCount;
     while (value > 0) {
-      const mineIndex = Math.round(Math.random() * (this.cellCount - 1));
-      const rowIndex = Math.floor(mineIndex / this.columnSize);
-      const colIndex = mineIndex % this.columnSize;
+      const mineCandidate = this.getRandomCell();
 
-      if (this.cellMineDatas[rowIndex][colIndex] === MineData.MINE) {
-        continue;
+      if (this.getMineData(mineCandidate) !== MineData.MINE) {
+        this.setMineData(mineCandidate, MineData.MINE);
+        --value;
       }
-
-      this.cellMineDatas[rowIndex][colIndex] = MineData.MINE;
-      --value;
     }
 
     for (let r = 0; r < this.rowSize; ++r) {
       for (let c = 0; c < this.columnSize; ++c) {
-        if (this.cellMineDatas[r][c] === MineData.MINE) continue;
+        const cell = { row: r, column: c };
 
-        this.cellMineDatas[r][c] = this.for8Neighbors(
-          { row: r, column: c },
-          () => {
-            let result: MineData.MineCount = 0;
-            return {
-              getResult: () => result,
-              calculate: (n: Cell) => {
-                if (this.cellMineDatas[n.row][n.column] === MineData.MINE)
-                  ++result;
-              },
-            };
-          },
+        if (this.getMineData(cell) === MineData.MINE) {
+          continue;
+        }
+
+        this.setMineData(
+          cell,
+          this.for8Neighbors(cell, this.mineCountPredicate),
         );
       }
     }
@@ -90,91 +79,62 @@ export class MineSweeperCore {
 
   swapMineWithFirstNonMine = (mineCell: Cell) => {
     this.validateCell(mineCell);
-    if (this.cellMineDatas[mineCell.row][mineCell.column] !== MineData.MINE) {
-      throw new Error("invalid");
+
+    if (this.getMineData(mineCell) !== MineData.MINE) {
+      throw new Error(`input cell is not a mine`);
     }
 
-    const firstNonMine: Cell = { row: -1, column: -1 };
+    let firstNonMine: Cell | undefined;
     for (let r = 0; r < this.rowSize; ++r) {
       for (let c = 0; c < this.columnSize; ++c) {
-        if (this.cellMineDatas[r][c] !== MineData.MINE) {
-          firstNonMine.row = r;
-          firstNonMine.column = c;
+        const at = { row: r, column: c };
+        if (this.getMineData(at) !== MineData.MINE) {
+          firstNonMine = at;
           break;
         }
       }
-      if (firstNonMine.row !== -1) break;
+      if (firstNonMine) break;
     }
 
-    if (firstNonMine.row === -1) {
+    if (!firstNonMine) {
       return;
     }
 
-    // Set initial data
-    {
-      this.cellMineDatas[mineCell.row][mineCell.column] = 0;
-      this.cellMineDatas[firstNonMine.row][firstNonMine.column] = MineData.MINE;
-    }
+    this.setMineData(mineCell, 0);
+    this.setMineData(firstNonMine, MineData.MINE);
 
-    // Refresh data
-    {
-      this.cellMineDatas[mineCell.row][mineCell.column] = this.for8Neighbors(
-        mineCell,
-        () => {
-          let result: MineData.MineCount = 0;
-          return {
-            getResult: () => result,
-            calculate: (n: Cell) => {
-              if (this.cellMineDatas[n.row][n.column] === MineData.MINE)
-                ++result;
-            },
-          };
-        },
-      );
+    this.setMineData(
+      mineCell,
+      this.for8Neighbors(mineCell, this.mineCountPredicate),
+    );
 
-      this.for8Neighbors(firstNonMine, () => ({
-        getResult: () => undefined,
-        calculate: (neighbor: Cell) => {
-          try {
-            this.validateCell(neighbor);
-          } catch {
-            return;
-          }
+    this.for8Neighbors(firstNonMine, () => ({
+      getResult: () => undefined,
+      calculate: (neighbor: Cell) => {
+        if (this.getMineData(neighbor) === MineData.MINE) {
+          return;
+        }
 
-          if (
-            this.cellMineDatas[neighbor.row][neighbor.column] === MineData.MINE
-          ) {
-            return;
-          }
-
-          this.cellMineDatas[neighbor.row][neighbor.column] =
-            this.for8Neighbors(neighbor, () => {
-              let result: MineData.MineCount = 0;
-              return {
-                getResult: () => result,
-                calculate: (n: Cell) => {
-                  if (this.cellMineDatas[n.row][n.column] === MineData.MINE)
-                    ++result;
-                },
-              };
-            });
-        },
-      }));
-    }
+        this.setMineData(
+          neighbor,
+          this.for8Neighbors(neighbor, this.mineCountPredicate),
+        );
+      },
+    }));
   };
 
-  openCell = ({ row, column }: Cell) => {
-    this.validateCell({ row, column });
+  openCell = (cell: Cell) => {
+    this.validateCell(cell);
 
-    const prev = this.cellStates[row][column];
+    const prev = this.getState(cell);
 
     switch (prev) {
       case CellState.CLOSED: {
-        if (this.cellMineDatas[row][column] === MineData.MINE) {
-          this.cellStates[row][column] = CellState.OPENED;
+        if (this.getMineData(cell) === MineData.MINE) {
+          this.setState(cell, CellState.OPENED);
           ++this.mineOpenedCount;
         } else {
-          this.floodOpenFromCell({ row, column });
+          this.floodOpenFromCell(cell);
         }
 
         return;
@@ -190,27 +150,27 @@ export class MineSweeperCore {
     exhaustiveCaseCheck({ value: prev });
   };
 
-  private floodOpenFromCell = ({ row, column }: Cell) => {
+  private floodOpenFromCell = (cell: Cell) => {
     try {
-      this.validateCell({ row, column });
+      this.validateCell(cell);
     } catch {
       return;
     }
 
-    const prev = this.cellStates[row][column];
+    const prev = this.getState(cell);
 
     switch (prev) {
       case CellState.CLOSED: {
-        if (this.cellMineDatas[row][column] === MineData.MINE) {
+        if (this.getMineData(cell) === MineData.MINE) {
           return;
         }
 
-        this.cellStates[row][column] = CellState.OPENED;
+        this.setState(cell, CellState.OPENED);
         ++this.nonMineOpenedCount;
 
-        if (this.cellMineDatas[row][column] === 0) {
-          for (let r = row - 1; r <= row + 1; ++r) {
-            for (let c = column - 1; c <= column + 1; ++c) {
+        if (this.getMineData(cell) === 0) {
+          for (let r = cell.row - 1; r <= cell.row + 1; ++r) {
+            for (let c = cell.column - 1; c <= cell.column + 1; ++c) {
               this.floodOpenFromCell({ row: r, column: c });
             }
           }
@@ -229,19 +189,19 @@ export class MineSweeperCore {
     exhaustiveCaseCheck({ value: prev });
   };
 
-  flagCell = ({ row, column }: Cell) => {
-    this.validateCell({ row, column });
+  flagCell = (cell: Cell) => {
+    this.validateCell(cell);
 
-    const prev = this.cellStates[row][column];
+    const prev = this.getState(cell);
 
     switch (prev) {
       case CellState.CLOSED: {
-        this.cellStates[row][column] = CellState.FLAGGED;
+        this.setState(cell, CellState.FLAGGED);
         ++this.flaggedCount;
         return;
       }
       case CellState.FLAGGED: {
-        this.cellStates[row][column] = CellState.CLOSED;
+        this.setState(cell, CellState.CLOSED);
         --this.flaggedCount;
         return;
       }
@@ -253,10 +213,10 @@ export class MineSweeperCore {
     exhaustiveCaseCheck({ value: prev });
   };
 
-  clearAdjacentCells = ({ row, column }: Cell) => {
-    this.validateCell({ row, column });
+  clearAdjacentCells = (cell: Cell) => {
+    this.validateCell(cell);
 
-    const prev = this.cellStates[row][column];
+    const prev = this.getState(cell);
 
     switch (prev) {
       case CellState.CLOSED: {
@@ -266,8 +226,8 @@ export class MineSweeperCore {
         return;
       }
       case CellState.OPENED: {
-        for (let r = row - 1; r <= row + 1; ++r) {
-          for (let c = column - 1; c <= column + 1; ++c) {
+        for (let r = cell.row - 1; r <= cell.row + 1; ++r) {
+          for (let c = cell.column - 1; c <= cell.column + 1; ++c) {
             try {
               this.openCell({ row: r, column: c });
             } catch {
@@ -282,9 +242,25 @@ export class MineSweeperCore {
     exhaustiveCaseCheck({ value: prev });
   };
 
-  getCellMineDatas = () => this.cellMineDatas;
+  getMineData = (cell: Cell) => {
+    this.validateCell(cell);
+    return this.cellMineDatas[cell.row][cell.column];
+  };
 
-  getCellStates = () => this.cellStates;
+  private setMineData = (cell: Cell, data: MineData.All) => {
+    this.validateCell(cell);
+    this.cellMineDatas[cell.row][cell.column] = data;
+  };
+
+  getState = (cell: Cell) => {
+    this.validateCell(cell);
+    return this.cellStates[cell.row][cell.column];
+  };
+
+  private setState = (cell: Cell, state: CellState.All) => {
+    this.validateCell(cell);
+    this.cellStates[cell.row][cell.column] = state;
+  };
 
   getNonMineOpenedCount = () => this.nonMineOpenedCount;
 
@@ -292,7 +268,7 @@ export class MineSweeperCore {
 
   getFlaggedCount = () => this.flaggedCount;
 
-  getCellCount = () => this.cellCount;
+  getCellCount = () => this.rowSize * this.columnSize;
 
   getRowSize = () => this.rowSize;
 
@@ -316,7 +292,7 @@ export class MineSweeperCore {
       calculate: (_neighbor: Cell) => void;
     },
   ): T => {
-    const predicatInstance = predicate();
+    const runner = predicate();
     const { row, column } = cell;
 
     for (let r = row - 1; r <= row + 1; ++r) {
@@ -331,10 +307,28 @@ export class MineSweeperCore {
           continue;
         }
 
-        predicatInstance.calculate(neighbor);
+        runner.calculate(neighbor);
       }
     }
 
-    return predicatInstance.getResult();
+    return runner.getResult();
+  };
+
+  private mineCountPredicate = () => {
+    let result: MineData.MineCount = 0;
+    return {
+      getResult: () => result,
+      calculate: (n: Cell) => {
+        if (this.getMineData(n) === MineData.MINE) ++result;
+      },
+    };
+  };
+
+  getRandomCell = () => {
+    const index = Math.round(Math.random() * (this.getCellCount() - 1));
+    return {
+      row: Math.floor(index / this.columnSize),
+      column: index % this.columnSize,
+    };
   };
 }
