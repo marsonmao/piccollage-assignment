@@ -8,12 +8,13 @@ import {
   Link,
   Timer,
 } from "@/app/_components";
-import { Cell, MineSweeperIgniteMode } from "@/app/_game";
-import { config, disableContextMenu } from "@/app/_react_game";
+import { MineSweeperIgniteMode } from "@/app/_game";
+import { config, disableContextMenu, useCellProps } from "@/app/_react_game";
 import {
   ComponentProps,
   useCallback,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -51,36 +52,34 @@ export default function Home() {
     })(),
   );
 
-  const getCellProps = useCallback(
-    (cell: Cell) => {
-      function handleUserAction(dataset: DOMStringMap, method: "clickCell") {
-        const { row, column } = dataset;
-        game.current[method]({
-          row: Number(row),
-          column: Number(column),
-        });
-
-        if (!isStarted) {
-          setIsStarted(true);
-          setTimerStart(Date.now());
-        }
-        rerender((r) => ++r);
-      }
-
-      const cellProps: ComponentProps<typeof CellComponent> = {
-        state: game.current.getState(cell),
-        data: game.current.getMineData(cell),
-        className: isEnded ? "pointer-events-none" : undefined,
-        onClick: (e) => {
-          handleUserAction(e.currentTarget.dataset, "clickCell");
+  const cellUserActions = useMemo(
+    () => ({
+      onClick: {
+        gameMethod: "clickCell" as const,
+        postUserAction: () => {
+          if (!isStarted) {
+            setIsStarted(true);
+            setTimerStart(Date.now());
+          }
+          rerender((r) => ++r);
         },
-        ["data-row"]: cell.row,
-        ["data-column"]: cell.column,
-      };
-      return cellProps;
-    },
-    [isEnded, isStarted],
+      },
+    }),
+    [isStarted],
   );
+
+  const cellAdditionalProps = useMemo(
+    () => ({
+      className: isEnded ? "pointer-events-none" : undefined,
+    }),
+    [isEnded],
+  );
+
+  const { getCellProps: getCellProps2 } = useCellProps({
+    game: game.current,
+    userActions: cellUserActions,
+    additionalProps: cellAdditionalProps,
+  });
 
   const handleDifficultySelect = useCallback<
     ComponentProps<typeof DifficultySelector>["onDifficultySelect"]
@@ -144,7 +143,7 @@ export default function Home() {
         rowSize={boardRowSize}
         columnSize={boardColumnSize}
         CellComponent={CellComponent}
-        getCellProps={getCellProps}
+        getCellProps={getCellProps2}
       />
     </div>
   );
