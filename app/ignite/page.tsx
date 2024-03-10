@@ -75,7 +75,7 @@ export default function Home() {
     [isEnded],
   );
 
-  const { getCellProps: getCellProps2 } = useCellProps({
+  const { getCellProps } = useCellProps({
     game: game.current,
     userActions: cellUserActions,
     additionalProps: cellAdditionalProps,
@@ -143,7 +143,7 @@ export default function Home() {
         rowSize={boardRowSize}
         columnSize={boardColumnSize}
         CellComponent={CellComponent}
-        getCellProps={getCellProps2}
+        getCellProps={getCellProps}
       />
     </div>
   );
