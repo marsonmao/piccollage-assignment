@@ -281,10 +281,6 @@ export class MineSweeperCore {
     exhaustiveCaseCheck({ value: prev });
   };
 
-  getCellMineDatas = () => this.cellMineDatas;
-
-  getCellStates = () => this.cellStates;
-
   getMineData = (cell: Cell) => {
     this.validateCell(cell);
     return this.cellMineDatas[cell.row][cell.column];

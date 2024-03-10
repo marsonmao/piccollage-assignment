@@ -52,7 +52,7 @@ export default function Home() {
   );
 
   const getCellProps = useCallback(
-    ({ row, column }: Cell) => {
+    (cell: Cell) => {
       function handleUserAction(dataset: DOMStringMap, method: "clickCell") {
         const { row, column } = dataset;
         game.current[method]({
@@ -68,14 +68,14 @@ export default function Home() {
       }
 
       const cellProps: ComponentProps<typeof CellComponent> = {
-        state: game.current.getCellStates()[row][column],
-        data: game.current.getCellMineDatas()[row][column],
+        state: game.current.getState(cell),
+        data: game.current.getMineData(cell),
         className: isEnded ? "pointer-events-none" : undefined,
         onClick: (e) => {
           handleUserAction(e.currentTarget.dataset, "clickCell");
         },
-        ["data-row"]: row,
-        ["data-column"]: column,
+        ["data-row"]: cell.row,
+        ["data-column"]: cell.column,
       };
       return cellProps;
     },
@@ -106,8 +106,8 @@ export default function Home() {
     rerender((r) => ++r);
   }, []);
 
-  const boardRowSize = game.current.getCellMineDatas().length;
-  const boardColumnSize = game.current.getCellMineDatas()[0].length;
+  const { row: boardRowSize, column: boardColumnSize } =
+    game.current.getBoardSize();
   const isTimerRunning = isStarted && !isEnded;
 
   return (

@@ -42,7 +42,7 @@ export class MineSweeperClassicMode {
   private startGame = (cell: Cell) => {
     this.core.validateCell(cell);
 
-    if (this.core.getCellMineDatas()[cell.row][cell.column] === MineData.MINE) {
+    if (this.core.getMineData(cell) === MineData.MINE) {
       this.core.swapMineWithFirstNonMine(cell);
     }
   };
@@ -75,35 +75,39 @@ export class MineSweeperClassicMode {
 
   flagCell = (cell: Cell) => this.core.flagCell(cell);
 
-  clearAdjacentCells = ({ row, column }: Cell) => {
-    this.core.validateCell({ row, column });
+  clearAdjacentCells = (cell: Cell) => {
+    this.core.validateCell(cell);
 
-    if (!(this.core.getCellMineDatas()[row][column] >= 1)) {
+    if (!(this.core.getMineData(cell) >= 1)) {
       return;
     }
 
-    const flagCount = this.core.for8Neighbors({ row, column }, () => {
+    const flagCount = this.core.for8Neighbors(cell, () => {
       let result = 0;
       return {
         getResult: () => result,
         calculate: (n: Cell) => {
-          if (this.core.getCellStates()[n.row][n.column] === CellState.FLAGGED)
-            ++result;
+          if (this.core.getState(n) === CellState.FLAGGED) ++result;
         },
       };
     });
 
-    if (flagCount !== this.core.getCellMineDatas()[row][column]) {
+    if (flagCount !== this.core.getMineData(cell)) {
       return;
     }
 
-    this.core.clearAdjacentCells({ row, column });
+    this.core.clearAdjacentCells(cell);
     this.checkGameEnd();
   };
 
-  getCellStates = () => this.core.getCellStates();
-
-  getCellMineDatas = () => this.core.getCellMineDatas();
-
   getRemainingMineCount = () => this.mineCount - this.core.getFlaggedCount();
+
+  getBoardSize = () => ({
+    row: this.core.getRowSize(),
+    column: this.core.getColumnSize(),
+  });
+
+  getMineData = (cell: Cell) => this.core.getMineData(cell);
+
+  getState = (cell: Cell) => this.core.getState(cell);
 }

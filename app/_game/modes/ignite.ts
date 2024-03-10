@@ -49,17 +49,17 @@ export class MineSweeperIgniteMode {
     let value = this.revealCount;
 
     while (value > 0) {
-      const mineIndex = Math.round(
-        Math.random() * (this.core.getCellCount() - 1),
-      );
-      const rowIndex = Math.floor(mineIndex / this.core.getRowSize());
-      const colIndex = mineIndex % this.core.getColumnSize();
+      const index = Math.round(Math.random() * (this.core.getCellCount() - 1));
+      const revealingCell = {
+        row: Math.floor(index / this.core.getRowSize()),
+        column: index % this.core.getColumnSize(),
+      };
 
       if (
-        this.core.getCellStates()[rowIndex][colIndex] === CellState.CLOSED &&
-        this.core.getCellMineDatas()[rowIndex][colIndex] >= 1
+        this.core.getState(revealingCell) === CellState.CLOSED &&
+        this.core.getMineData(revealingCell) >= 1
       ) {
-        this.clickCell({ row: rowIndex, column: colIndex });
+        this.clickCell(revealingCell);
         --value;
         ++this.clickCount;
       }
@@ -82,7 +82,7 @@ export class MineSweeperIgniteMode {
   clickCell = (cell: Cell) => {
     this.core.openCell(cell);
 
-    if (this.core.getCellMineDatas()[cell.row][cell.column] === MineData.MINE) {
+    if (this.core.getMineData(cell) === MineData.MINE) {
       this.core.for8Neighbors(cell, () => ({
         getResult: () => undefined,
         calculate: (neighbor: Cell) => {
@@ -94,10 +94,8 @@ export class MineSweeperIgniteMode {
 
           if (
             !(
-              this.core.getCellMineDatas()[neighbor.row][neighbor.column] >=
-                1 &&
-              this.core.getCellStates()[neighbor.row][neighbor.column] ===
-                CellState.OPENED
+              this.core.getMineData(neighbor) >= 1 &&
+              this.core.getState(neighbor) === CellState.OPENED
             )
           ) {
             return;
@@ -107,10 +105,10 @@ export class MineSweeperIgniteMode {
             let result = 0;
             return {
               getResult: () => result,
-              calculate: ({ row, column }: Cell) => {
+              calculate: (n: Cell) => {
                 if (
-                  this.core.getCellStates()[row][column] === CellState.OPENED &&
-                  this.core.getCellMineDatas()[row][column] === MineData.MINE
+                  this.core.getState(n) === CellState.OPENED &&
+                  this.core.getMineData(n) === MineData.MINE
                 ) {
                   ++result;
                 }
@@ -118,10 +116,7 @@ export class MineSweeperIgniteMode {
             };
           });
 
-          if (
-            openedMineCount !==
-            this.core.getCellMineDatas()[neighbor.row][neighbor.column]
-          ) {
+          if (openedMineCount !== this.core.getMineData(neighbor)) {
             return;
           }
 
@@ -135,11 +130,16 @@ export class MineSweeperIgniteMode {
     this.checkGameEnd();
   };
 
-  getCellStates = () => this.core.getCellStates();
-
-  getCellMineDatas = () => this.core.getCellMineDatas();
-
   getRemainingMineCount = () => this.mineCount - this.core.getMineOpenedCount();
 
   getRemainingClickCount = () => this.clickCount;
+
+  getBoardSize = () => ({
+    row: this.core.getRowSize(),
+    column: this.core.getColumnSize(),
+  });
+
+  getMineData = (cell: Cell) => this.core.getMineData(cell);
+
+  getState = (cell: Cell) => this.core.getState(cell);
 }
