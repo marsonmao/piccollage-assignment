@@ -53,18 +53,12 @@ export class MineSweeperCore {
 
     let value = mineCount;
     while (value > 0) {
-      const mineIndex = Math.round(Math.random() * (this.getCellCount() - 1));
-      const mineCandidate = {
-        row: Math.floor(mineIndex / this.columnSize),
-        column: mineIndex % this.columnSize,
-      };
+      const mineCandidate = this.getRandomCell();
 
-      if (this.getMineData(mineCandidate) === MineData.MINE) {
-        continue;
+      if (this.getMineData(mineCandidate) !== MineData.MINE) {
+        this.setMineData(mineCandidate, MineData.MINE);
+        --value;
       }
-
-      this.setMineData(mineCandidate, MineData.MINE);
-      --value;
     }
 
     for (let r = 0; r < this.rowSize; ++r) {
@@ -327,6 +321,14 @@ export class MineSweeperCore {
       calculate: (n: Cell) => {
         if (this.getMineData(n) === MineData.MINE) ++result;
       },
+    };
+  };
+
+  getRandomCell = () => {
+    const index = Math.round(Math.random() * (this.getCellCount() - 1));
+    return {
+      row: Math.floor(index / this.columnSize),
+      column: index % this.columnSize,
     };
   };
 }

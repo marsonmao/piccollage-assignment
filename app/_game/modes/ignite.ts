@@ -49,11 +49,7 @@ export class MineSweeperIgniteMode {
     let value = this.revealCount;
 
     while (value > 0) {
-      const index = Math.round(Math.random() * (this.core.getCellCount() - 1));
-      const revealingCell = {
-        row: Math.floor(index / this.core.getRowSize()),
-        column: index % this.core.getColumnSize(),
-      };
+      const revealingCell = this.core.getRandomCell();
 
       if (
         this.core.getState(revealingCell) === CellState.CLOSED &&
