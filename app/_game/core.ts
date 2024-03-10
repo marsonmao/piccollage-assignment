@@ -77,15 +77,7 @@ export class MineSweeperCore {
 
         this.setMineData(
           cell,
-          this.for8Neighbors(cell, () => {
-            let result: MineData.MineCount = 0;
-            return {
-              getResult: () => result,
-              calculate: (n: Cell) => {
-                if (this.getMineData(n) === MineData.MINE) ++result;
-              },
-            };
-          }),
+          this.for8Neighbors(cell, this.mineCountPredicate),
         );
       }
     }
@@ -95,7 +87,7 @@ export class MineSweeperCore {
     this.validateCell(mineCell);
 
     if (this.getMineData(mineCell) !== MineData.MINE) {
-      throw new Error(`input cell is not mine`);
+      throw new Error(`input cell is not a mine`);
     }
 
     let firstNonMine: Cell | undefined;
@@ -114,21 +106,12 @@ export class MineSweeperCore {
       return;
     }
 
+    this.setMineData(mineCell, 0);
     this.setMineData(firstNonMine, MineData.MINE);
 
     this.setMineData(
       mineCell,
-      this.for8Neighbors(mineCell, () => {
-        let result: MineData.MineCount = 0;
-        return {
-          getResult: () => result,
-          calculate: (n: Cell) => {
-            if (this.getMineData(n) === MineData.MINE) {
-              ++result;
-            }
-          },
-        };
-      }),
+      this.for8Neighbors(mineCell, this.mineCountPredicate),
     );
 
     this.for8Neighbors(firstNonMine, () => ({
@@ -140,17 +123,7 @@ export class MineSweeperCore {
 
         this.setMineData(
           neighbor,
-          this.for8Neighbors(neighbor, () => {
-            let result: MineData.MineCount = 0;
-            return {
-              getResult: () => result,
-              calculate: (n: Cell) => {
-                if (this.getMineData(n) === MineData.MINE) {
-                  ++result;
-                }
-              },
-            };
-          }),
+          this.for8Neighbors(neighbor, this.mineCountPredicate),
         );
       },
     }));
@@ -325,7 +298,7 @@ export class MineSweeperCore {
       calculate: (_neighbor: Cell) => void;
     },
   ): T => {
-    const predicatInstance = predicate();
+    const runner = predicate();
     const { row, column } = cell;
 
     for (let r = row - 1; r <= row + 1; ++r) {
@@ -340,10 +313,20 @@ export class MineSweeperCore {
           continue;
         }
 
-        predicatInstance.calculate(neighbor);
+        runner.calculate(neighbor);
       }
     }
 
-    return predicatInstance.getResult();
+    return runner.getResult();
+  };
+
+  private mineCountPredicate = () => {
+    let result: MineData.MineCount = 0;
+    return {
+      getResult: () => result,
+      calculate: (n: Cell) => {
+        if (this.getMineData(n) === MineData.MINE) ++result;
+      },
+    };
   };
 }
