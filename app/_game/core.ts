@@ -71,7 +71,7 @@ export class MineSweeperCore {
       for (let c = 0; c < this.columnSize; ++c) {
         if (this.cellMineDatas[r][c] === MineData.MINE) continue;
 
-        this.cellMineDatas[r][c] = this.check8Neighbors(
+        this.cellMineDatas[r][c] = this.for8Neighbors(
           { row: r, column: c },
           () => {
             let result: MineData.MineCount = 0;
@@ -117,7 +117,7 @@ export class MineSweeperCore {
 
     // Refresh data
     {
-      this.cellMineDatas[mineCell.row][mineCell.column] = this.check8Neighbors(
+      this.cellMineDatas[mineCell.row][mineCell.column] = this.for8Neighbors(
         mineCell,
         () => {
           let result: MineData.MineCount = 0;
@@ -143,7 +143,7 @@ export class MineSweeperCore {
             continue;
           }
 
-          this.cellMineDatas[r][c] = this.check8Neighbors(
+          this.cellMineDatas[r][c] = this.for8Neighbors(
             { row: r, column: c },
             () => {
               let result: MineData.MineCount = 0;
@@ -304,7 +304,7 @@ export class MineSweeperCore {
     }
   };
 
-  check8Neighbors = <T>(
+  for8Neighbors = <T>(
     cell: Cell,
     predicate: () => {
       getResult: () => T;

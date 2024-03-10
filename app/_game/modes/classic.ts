@@ -82,7 +82,7 @@ export class MineSweeperClassicMode {
       return;
     }
 
-    const flagCount = this.core.check8Neighbors({ row, column }, () => {
+    const flagCount = this.core.for8Neighbors({ row, column }, () => {
       let result = 0;
       return {
         getResult: () => result,
