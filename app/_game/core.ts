@@ -266,7 +266,6 @@ export class MineSweeperCore {
         return;
       }
       case CellState.OPENED: {
-
         for (let r = row - 1; r <= row + 1; ++r) {
           for (let c = column - 1; c <= column + 1; ++c) {
             try {
@@ -295,6 +294,10 @@ export class MineSweeperCore {
 
   getCellCount = () => this.cellCount;
 
+  getRowSize = () => this.rowSize;
+
+  getColumnSize = () => this.columnSize;
+
   validateCell = ({ row, column }: Cell) => {
     if (
       row < 0 ||
@@ -302,7 +305,7 @@ export class MineSweeperCore {
       column < 0 ||
       column >= this.columnSize
     ) {
-      throw new Error("invalid");
+      throw new Error(`invalid cell {${row}, ${column}}`);
     }
   };
 
