@@ -241,18 +241,6 @@ export class MineSweeperCore {
         return;
       }
       case CellState.OPENED: {
-        if (!(this.cellMineDatas[row][column] >= 1)) {
-          return;
-        }
-
-        const flagCount = this.calculateAdjacentCount(
-          { row, column },
-          this.cellStates,
-          CellState.FLAGGED,
-        );
-        if (flagCount !== this.cellMineDatas[row][column]) {
-          return;
-        }
 
         for (let r = row - 1; r <= row + 1; ++r) {
           for (let c = column - 1; c <= column + 1; ++c) {

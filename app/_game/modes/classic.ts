@@ -1,5 +1,5 @@
 import type { Cell } from "../core";
-import { MineData, MineSweeperCore } from "../core";
+import { CellState, MineData, MineSweeperCore } from "../core";
 
 export class MineSweeperClassicMode {
   private core: MineSweeperCore;
@@ -76,6 +76,27 @@ export class MineSweeperClassicMode {
   flagCell = (cell: Cell) => this.core.flagCell(cell);
 
   clearAdjacentCells = ({ row, column }: Cell) => {
+    this.core.validateCell({ row, column });
+
+    if (!(this.core.getCellMineDatas()[row][column] >= 1)) {
+      return;
+    }
+
+    const flagCount = this.core.check8Neighbors({ row, column }, () => {
+      let result = 0;
+      return {
+        getResult: () => result,
+        calculate: (n: Cell) => {
+          if (this.core.getCellStates()[n.row][n.column] === CellState.FLAGGED)
+            ++result;
+        },
+      };
+    });
+
+    if (flagCount !== this.core.getCellMineDatas()[row][column]) {
+      return;
+    }
+
     this.core.clearAdjacentCells({ row, column });
     this.checkGameEnd();
   };
