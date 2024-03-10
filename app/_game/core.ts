@@ -103,6 +103,7 @@ export class MineSweeperCore {
           break;
         }
       }
+      if (firstNonMine.row !== -1) break;
     }
 
     if (firstNonMine.row === -1) {
@@ -131,21 +132,23 @@ export class MineSweeperCore {
         },
       );
 
-      for (let r = firstNonMine.row - 1; r <= firstNonMine.row + 1; ++r) {
-        for (
-          let c = firstNonMine.column - 1;
-          c <= firstNonMine.column + 1;
-          ++c
-        ) {
+      this.for8Neighbors(firstNonMine, () => ({
+        getResult: () => undefined,
+        calculate: (neighbor: Cell) => {
           try {
-            this.validateCell({ row: r, column: c });
+            this.validateCell(neighbor);
           } catch {
-            continue;
+            return;
           }
 
-          this.cellMineDatas[r][c] = this.for8Neighbors(
-            { row: r, column: c },
-            () => {
+          if (
+            this.cellMineDatas[neighbor.row][neighbor.column] === MineData.MINE
+          ) {
+            return;
+          }
+
+          this.cellMineDatas[neighbor.row][neighbor.column] =
+            this.for8Neighbors(neighbor, () => {
               let result: MineData.MineCount = 0;
               return {
                 getResult: () => result,
@@ -154,10 +157,9 @@ export class MineSweeperCore {
                     ++result;
                 },
               };
-            },
-          );
-        }
-      }
+            });
+        },
+      }));
     }
   };
 
