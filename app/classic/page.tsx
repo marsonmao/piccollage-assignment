@@ -3,9 +3,9 @@
 import {
   Board,
   Cell as CellComponent,
+  Count,
   DifficultySelector,
   Link,
-  MineCount,
   Timer,
 } from "@/app/_components";
 import { Cell, MineSweeperClassicMode } from "@/app/_game";
@@ -117,15 +117,16 @@ export default function Home() {
           onDifficultySelect={handleDifficultySelect}
         />
       </div>
-      <div className="w-2/6 flex justify-center items-center flex-row gap-1 mt-2">
+      <div className="text-center mt-2">{headlineText}</div>
+      <div className="w-full flex justify-center items-center flex-row gap-1 mt-2">
         <Timer
-          className="w-1/4 [&&]:text-end"
+          className="[&&]:text-end"
           startTimestampMs={timerStart}
           isRunning={isTimerRunning}
         />
-        <div className="w-1/2 text-center">{headlineText}</div>
-        <MineCount
-          className="w-1/4 [&&]:text-start"
+        <Count
+          className="[&&]:text-start"
+          prefix="💣"
           count={game.current.getRemainingMineCount()}
         />
       </div>
