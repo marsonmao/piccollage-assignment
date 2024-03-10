@@ -100,25 +100,28 @@ export class MineSweeperCore {
       return;
     }
 
-    this.setMineData(mineCell, 0);
-    this.setMineData(firstNonMine, MineData.MINE);
+    this.for8Neighbors(mineCell, () => ({
+      getResult: () => undefined,
+      calculate: (n) => {
+        if (this.getMineData(n) >= 1) {
+          this.setMineData(n, (this.getMineData(n) - 1) as MineData.MineCount);
+        }
+      },
+    }));
 
     this.setMineData(
       mineCell,
       this.for8Neighbors(mineCell, this.mineCountPredicate),
     );
 
+    this.setMineData(firstNonMine, MineData.MINE);
+
     this.for8Neighbors(firstNonMine, () => ({
       getResult: () => undefined,
-      calculate: (neighbor: Cell) => {
-        if (this.getMineData(neighbor) === MineData.MINE) {
-          return;
+      calculate: (n: Cell) => {
+        if (this.getMineData(n) !== MineData.MINE) {
+          this.setMineData(n, (this.getMineData(n) + 1) as MineData.MineCount);
         }
-
-        this.setMineData(
-          neighbor,
-          this.for8Neighbors(neighbor, this.mineCountPredicate),
-        );
       },
     }));
   };
