@@ -100,7 +100,7 @@ export default function Home() {
     setDifficultyIndex(nextIndex);
   }, []);
 
-  useLayoutEffect(() => {
+  useLayoutEffect(function onlyRevealAtClientRender() {
     game.current.revealCells();
     rerender((r) => ++r);
   }, []);
