@@ -85,7 +85,7 @@ export default function Home() {
         game.current.getMineData(cell) === MineData.MINE &&
         isLost;
       return {
-        className: `${isEnded ? "pointer-events-none" : undefined} ${isWon ? "bg-transparent" : ""} ${isLost ? "bg-red-200" : ""}`,
+        className: `${isEnded ? "pointer-events-none" : undefined} ${isWon ? "[&&]:bg-transparent" : ""} ${isLost ? "[&&]:bg-red-200" : ""}`,
         ...(isBombAndIsLost
           ? {
               textClass: "animate-ping",

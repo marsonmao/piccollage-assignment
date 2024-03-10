@@ -80,7 +80,7 @@ export default function Home() {
         game.current.getMineData(cell) === MineData.MINE &&
         headlineText === headlines.won;
       return {
-        className: `${isEnded ? "pointer-events-none" : undefined} ${isBombAndIsWon ? boardCelebrationClasses : ""} ${isLost ? "bg-red-200" : ""}`,
+        className: `${isEnded ? "pointer-events-none" : undefined} ${isBombAndIsWon ? boardCelebrationClasses : ""} ${isLost ? "[&&]:bg-red-200" : ""}`,
         ...(isBombAndIsWon
           ? {
               textClass: "animate-spin",
