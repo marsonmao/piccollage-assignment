@@ -71,11 +71,19 @@ export class MineSweeperCore {
       for (let c = 0; c < this.columnSize; ++c) {
         if (this.cellMineDatas[r][c] === MineData.MINE) continue;
 
-        this.cellMineDatas[r][c] = this.calculateAdjacentCount(
+        this.cellMineDatas[r][c] = this.check8Neighbors(
           { row: r, column: c },
-          this.cellMineDatas,
-          MineData.MINE,
-        ) as MineData.MineCount;
+          () => {
+            let result: MineData.MineCount = 0;
+            return {
+              getResult: () => result,
+              calculate: (n: Cell) => {
+                if (this.cellMineDatas[n.row][n.column] === MineData.MINE)
+                  ++result;
+              },
+            };
+          },
+        );
       }
     }
   };
@@ -109,12 +117,19 @@ export class MineSweeperCore {
 
     // Refresh data
     {
-      this.cellMineDatas[mineCell.row][mineCell.column] =
-        this.calculateAdjacentCount(
-          mineCell,
-          this.cellMineDatas,
-          MineData.MINE,
-        ) as MineData.MineCount;
+      this.cellMineDatas[mineCell.row][mineCell.column] = this.check8Neighbors(
+        mineCell,
+        () => {
+          let result: MineData.MineCount = 0;
+          return {
+            getResult: () => result,
+            calculate: (n: Cell) => {
+              if (this.cellMineDatas[n.row][n.column] === MineData.MINE)
+                ++result;
+            },
+          };
+        },
+      );
 
       for (let r = firstNonMine.row - 1; r <= firstNonMine.row + 1; ++r) {
         for (
@@ -128,11 +143,19 @@ export class MineSweeperCore {
             continue;
           }
 
-          this.cellMineDatas[r][c] = this.calculateAdjacentCount(
+          this.cellMineDatas[r][c] = this.check8Neighbors(
             { row: r, column: c },
-            this.cellMineDatas,
-            MineData.MINE,
-          ) as MineData.MineCount;
+            () => {
+              let result: MineData.MineCount = 0;
+              return {
+                getResult: () => result,
+                calculate: (n: Cell) => {
+                  if (this.cellMineDatas[n.row][n.column] === MineData.MINE)
+                    ++result;
+                },
+              };
+            },
+          );
         }
       }
     }
@@ -279,31 +302,6 @@ export class MineSweeperCore {
     ) {
       throw new Error("invalid");
     }
-  };
-
-  private calculateAdjacentCount = (
-    cell: Cell,
-    data: Array<Array<unknown>>,
-    target: unknown,
-  ): number => {
-    let result = 0;
-
-    const { row, column } = cell;
-    for (let r = row - 1; r <= row + 1; ++r) {
-      for (let c = column - 1; c <= column + 1; ++c) {
-        if (r === row && c === column) continue;
-
-        try {
-          this.validateCell({ row: r, column: c });
-        } catch {
-          continue;
-        }
-
-        if (data[r][c] === target) ++result;
-      }
-    }
-
-    return result;
   };
 
   check8Neighbors = <T>(
