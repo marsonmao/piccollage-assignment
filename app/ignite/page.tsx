@@ -8,8 +8,13 @@ import {
   Link,
   Timer,
 } from "@/app/_components";
-import { MineSweeperIgniteMode } from "@/app/_game";
-import { config, disableContextMenu, useCellProps } from "@/app/_react_game";
+import { Cell, MineData, MineSweeperIgniteMode } from "@/app/_game";
+import {
+  boardCelebrationClasses,
+  config,
+  disableContextMenu,
+  useCellProps,
+} from "@/app/_react_game";
 import {
   ComponentProps,
   useCallback,
@@ -68,17 +73,23 @@ export default function Home() {
     [isStarted],
   );
 
-  const cellAdditionalProps = useMemo(
-    () => ({
-      className: isEnded ? "pointer-events-none" : undefined,
-    }),
-    [isEnded],
+  const getAdditionalProps = useCallback(
+    (cell: Cell) => {
+      const isLost = headlineText === headlines.lost;
+      const isBombAndIsWon =
+        game.current.getMineData(cell) === MineData.MINE &&
+        headlineText === headlines.won;
+      return {
+        className: `${isEnded ? "pointer-events-none" : undefined} ${isBombAndIsWon ? boardCelebrationClasses : ""} ${isLost ? "bg-red-200" : ""}`,
+      };
+    },
+    [headlineText, isEnded],
   );
 
   const { getCellProps } = useCellProps({
     game: game.current,
     userActions: cellUserActions,
-    additionalProps: cellAdditionalProps,
+    getAdditionalProps,
   });
 
   const handleDifficultySelect = useCallback<

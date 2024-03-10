@@ -15,7 +15,7 @@ export function useCellProps<
 >({
   game,
   userActions,
-  additionalProps,
+  getAdditionalProps,
 }: {
   game: T;
   userActions: Record<
@@ -25,7 +25,7 @@ export function useCellProps<
       postUserAction: (_cell: Cell) => void;
     }
   >;
-  additionalProps?: Partial<CellComponentProps>;
+  getAdditionalProps?: (_cell: Cell) => Partial<CellComponentProps>;
 }) {
   const getCellProps = useCallback(
     (cell: Cell) => {
@@ -54,7 +54,7 @@ export function useCellProps<
 
       const cellProps: CellComponentProps = {
         ...userActionHandlers,
-        ...additionalProps,
+        ...getAdditionalProps?.(cell),
         state: game.getState(cell),
         data: game.getMineData(cell),
         ["data-row"]: cell.row,
@@ -62,7 +62,7 @@ export function useCellProps<
       };
       return cellProps;
     },
-    [game, userActions, additionalProps],
+    [game, userActions, getAdditionalProps],
   );
 
   return {
