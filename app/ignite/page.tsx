@@ -8,12 +8,18 @@ import {
   Link,
   Timer,
 } from "@/app/_components";
-import { Cell, MineSweeperClassicMode } from "@/app/_game";
+import { Cell, MineSweeperIgniteMode } from "@/app/_game";
 import { config, disableContextMenu } from "@/app/_react_game";
-import { ComponentProps, useCallback, useRef, useState } from "react";
+import {
+  ComponentProps,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
-const difficulties = config.classic.boards;
-const headlines = config.classic.headlines;
+const difficulties = config.ignite.boards;
+const headlines = config.ignite.headlines;
 
 export default function Home() {
   const [_, rerender] = useState(0);
@@ -25,7 +31,7 @@ export default function Home() {
 
   const game = useRef(
     (function create() {
-      const game = new MineSweeperClassicMode({
+      const game = new MineSweeperIgniteMode({
         onGameWon: () => {
           setHeadlineText(headlines.won);
           setIsEnded(true);
@@ -41,17 +47,13 @@ export default function Home() {
         size: { row: initialDifficulty.row, column: initialDifficulty.column },
         mineCount: initialDifficulty.mineCount,
       });
-
       return game;
     })(),
   );
 
   const getCellProps = useCallback(
     ({ row, column }: Cell) => {
-      function handleUserAction(
-        dataset: DOMStringMap,
-        method: "clickCell" | "flagCell" | "clearAdjacentCells",
-      ) {
+      function handleUserAction(dataset: DOMStringMap, method: "clickCell") {
         const { row, column } = dataset;
         game.current[method]({
           row: Number(row),
@@ -72,12 +74,6 @@ export default function Home() {
         onClick: (e) => {
           handleUserAction(e.currentTarget.dataset, "clickCell");
         },
-        onContextMenu: (e) => {
-          handleUserAction(e.currentTarget.dataset, "flagCell");
-        },
-        onDoubleClick: (e) => {
-          handleUserAction(e.currentTarget.dataset, "clearAdjacentCells");
-        },
         ["data-row"]: row,
         ["data-column"]: column,
       };
@@ -96,11 +92,18 @@ export default function Home() {
       mineCount: nextDifficulty.mineCount,
     });
 
+    game.current.revealCells();
+
     setHeadlineText(headlines.initial);
     setIsStarted(false);
     setTimerStart(Date.now());
     setIsEnded(false);
     setDifficultyIndex(nextIndex);
+  }, []);
+
+  useLayoutEffect(() => {
+    game.current.revealCells();
+    rerender((r) => ++r);
   }, []);
 
   const boardRowSize = game.current.getCellMineDatas().length;
@@ -128,6 +131,11 @@ export default function Home() {
           className="[&&]:text-start"
           prefix="💣"
           count={game.current.getRemainingMineCount()}
+        />
+        <Count
+          className="[&&]:text-start"
+          prefix="👆"
+          count={game.current.getRemainingClickCount()}
         />
       </div>
       <Board

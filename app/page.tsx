@@ -6,7 +6,10 @@ export default function Home() {
   return (
     <div className="w-full h-full flex justify-center items-center flex-col">
       <h1 className="m-2">Select mode</h1>
-      <Link href="/classic">Classic</Link>
+      <div className="w-full flex justify-center items-center flex-col gap-1">
+        <Link href="/classic">Classic</Link>
+        <Link href="/ignite">Ignite</Link>
+      </div>
     </div>
   );
 }

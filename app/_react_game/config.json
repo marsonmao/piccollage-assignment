@@ -42,7 +42,8 @@
         "row": 8,
         "column": 8,
         "mineCount": 9,
-        "clicks": 32
+        "maxClickCount": 10,
+        "revealCount": 7
       },
       {
         "id": "g1",
@@ -50,7 +51,8 @@
         "row": 16,
         "column": 16,
         "mineCount": 40,
-        "clicks": 128
+        "maxClickCount": 44,
+        "revealCount": 26
       }
     ]
   }

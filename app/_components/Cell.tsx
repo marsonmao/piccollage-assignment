@@ -10,14 +10,12 @@ type CellProps = ComponentProps<"div"> & {
   data: MineData.All;
 };
 
-const CELL_SIZE = 8;
-
 export const CELL_CLASSES = `
   inline-flex justify-center items-center\
   rounded-sm border p-1\
   cursor-pointer select-none\
   text-black bg-white\
-  w-${CELL_SIZE} h-${CELL_SIZE}\
+  w-[32px] h-[32px]\
 `;
 
 function renderCell({ state, data, ...rest }: CellProps) {
