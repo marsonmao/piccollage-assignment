@@ -86,12 +86,6 @@ export class MineSweeperIgniteMode {
       this.core.for8Neighbors(cell, () => ({
         getResult: () => undefined,
         calculate: (neighbor: Cell) => {
-          try {
-            this.core.validateCell(neighbor);
-          } catch {
-            return;
-          }
-
           if (
             !(
               this.core.getMineData(neighbor) >= 1 &&
