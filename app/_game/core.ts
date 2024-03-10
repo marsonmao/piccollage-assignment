@@ -235,11 +235,9 @@ export class MineSweeperCore {
 
     switch (prev) {
       case CellState.CLOSED: {
-        this.cellStates[row][column] = CellState.FLAGGED;
         return;
       }
       case CellState.FLAGGED: {
-        this.cellStates[row][column] = CellState.CLOSED;
         return;
       }
       case CellState.OPENED: {
