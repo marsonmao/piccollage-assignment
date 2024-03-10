@@ -24,7 +24,7 @@ function Row<P>({
       />
     ),
   );
-  return <div>{cells}</div>;
+  return <div className="flex w-full justify-start items-start">{cells}</div>;
 }
 
 export function Board<P>(props: ComponentProps<"div"> & BoardProps<P>) {

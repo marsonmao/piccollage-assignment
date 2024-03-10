@@ -29,7 +29,7 @@ function renderCell({ state, data, ...rest }: CellProps) {
     case CellState.OPENED: {
       if (data === MineData.MINE) return <Mine {...rest} />;
 
-      return <Opened {...rest} text={data.toString()} />;
+      return <Opened {...rest} text={data === 0 ? "" : data.toString()} />;
     }
   }
   exhaustiveCaseCheck({
