@@ -81,6 +81,11 @@ export default function Home() {
         headlineText === headlines.won;
       return {
         className: `${isEnded ? "pointer-events-none" : undefined} ${isBombAndIsWon ? boardCelebrationClasses : ""} ${isLost ? "bg-red-200" : ""}`,
+        ...(isBombAndIsWon
+          ? {
+              textClass: "animate-spin",
+            }
+          : {}),
       };
     },
     [headlineText, isEnded],

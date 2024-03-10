@@ -41,6 +41,6 @@ function renderCell({ state, data, ...rest }: CellProps) {
 export function Cell({ className, ...rest }: CellProps) {
   return renderCell({
     ...rest,
-    className: `${CELL_CLASSES} ${className ?? ""}`,
+    className: `${CELL_CLASSES} ${className}`,
   });
 }
