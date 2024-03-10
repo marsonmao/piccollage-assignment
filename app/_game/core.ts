@@ -134,12 +134,6 @@ export class MineSweeperCore {
     this.for8Neighbors(firstNonMine, () => ({
       getResult: () => undefined,
       calculate: (neighbor: Cell) => {
-        try {
-          this.validateCell(neighbor);
-        } catch {
-          return;
-        }
-
         if (this.getMineData(neighbor) === MineData.MINE) {
           return;
         }
