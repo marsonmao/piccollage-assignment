@@ -317,4 +317,33 @@ export class MineSweeperCore {
 
     return result;
   };
+
+  check8Neighbors = <T>(
+    cell: Cell,
+    predicate: () => {
+      getResult: () => T;
+      calculate: (_neighbor: Cell) => void;
+    },
+  ): T => {
+    const predicatInstance = predicate();
+    const { row, column } = cell;
+
+    for (let r = row - 1; r <= row + 1; ++r) {
+      for (let c = column - 1; c <= column + 1; ++c) {
+        if (r === row && c === column) continue;
+
+        const neighbor = { row: r, column: c };
+
+        try {
+          this.validateCell(neighbor);
+        } catch {
+          continue;
+        }
+
+        predicatInstance.calculate(neighbor);
+      }
+    }
+
+    return predicatInstance.getResult();
+  };
 }
