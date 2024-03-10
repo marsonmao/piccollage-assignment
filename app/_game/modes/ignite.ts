@@ -67,7 +67,7 @@ export class MineSweeperIgniteMode {
   };
 
   private isGameLost = () => {
-    return this.clickCount <= 0;
+    return this.clickCount < this.getRemainingMineCount();
   };
 
   private checkGameEnd = () => {

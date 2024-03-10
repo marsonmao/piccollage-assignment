@@ -8,8 +8,13 @@ import {
   Link,
   Timer,
 } from "@/app/_components";
-import { MineSweeperClassicMode } from "@/app/_game";
-import { config, disableContextMenu, useCellProps } from "@/app/_react_game";
+import { Cell, CellState, MineData, MineSweeperClassicMode } from "@/app/_game";
+import {
+  boardCelebrationClasses,
+  config,
+  disableContextMenu,
+  useCellProps,
+} from "@/app/_react_game";
 import { ComponentProps, useCallback, useMemo, useRef, useState } from "react";
 
 const difficulties = config.classic.boards;
@@ -71,17 +76,30 @@ export default function Home() {
     };
   }, [isStarted]);
 
-  const cellAdditionalProps = useMemo(
-    () => ({
-      className: isEnded ? "pointer-events-none" : undefined,
-    }),
-    [isEnded],
+  const getAdditionalProps = useCallback(
+    (cell: Cell) => {
+      const isLost = headlineText === headlines.lost;
+      const isWon = isEnded && !isLost;
+      const isBombAndIsLost =
+        game.current.getState(cell) === CellState.OPENED &&
+        game.current.getMineData(cell) === MineData.MINE &&
+        isLost;
+      return {
+        className: `${isEnded ? "pointer-events-none" : undefined} ${isWon ? "bg-transparent" : ""} ${isLost ? "bg-red-200" : ""}`,
+        ...(isBombAndIsLost
+          ? {
+              textClass: "animate-ping",
+            }
+          : {}),
+      };
+    },
+    [isEnded, headlineText],
   );
 
   const { getCellProps } = useCellProps({
     game: game.current,
     userActions: cellUserActions,
-    additionalProps: cellAdditionalProps,
+    getAdditionalProps,
   });
 
   const handleDifficultySelect = useCallback<
@@ -104,6 +122,7 @@ export default function Home() {
   const { row: boardRowSize, column: boardColumnSize } =
     game.current.getBoardSize();
   const isTimerRunning = isStarted && !isEnded;
+  const boardCelebration = `${headlineText === headlines.won ? boardCelebrationClasses : ""}`;
 
   return (
     <div className="w-full h-full flex justify-center items-center flex-col p-2">
@@ -129,7 +148,7 @@ export default function Home() {
         />
       </div>
       <Board
-        className="mt-2"
+        className={`mt-2 ${boardCelebration}`}
         onContextMenu={disableContextMenu}
         rowSize={boardRowSize}
         columnSize={boardColumnSize}
