@@ -16,10 +16,10 @@ Open [http://localhost:300305](http://localhost:300305) with your browser to pla
 
 ## Tech stack
 
-1. NextJS / React
-1. Tailwind CSS
-1. Eslint
-1. Prettier
+1. NextJS / React: to leverage the state-of-the-art React starter; mainly rely on the default config and the convenient deployment system provided
+1. Tailwind CSS: just trying this cool thing and it currently fits the requirement without troubles
+1. Eslint: added a rule for detecting unused vars
+1. Prettier: added a plugin to sort imports automatically
 
 ## Backlog
 
