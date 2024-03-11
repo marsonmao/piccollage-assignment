@@ -12,7 +12,7 @@ Then run the development server:
 npm run dev
 ```
 
-Open [http://localhost:300305](http://localhost:300305) with your browser to play 💣💣💣
+Open [http://localhost:30305](http://localhost:30305) with your browser to play 💣💣💣
 
 ## Tech stack
 
