@@ -29,7 +29,7 @@ The classes should be aware of winning and losing the game, also expose APIs for
 - Lost: if at least 1 mine cell is opened
 - Clear adjacent cells when double clicking a cell which has enough adjacent flagged cells
 
-#### Ignite mode
+#### Detonation mode
 
 - Won: if all mine cells are opened
 - Lost: if click count is less than remaining mine count
