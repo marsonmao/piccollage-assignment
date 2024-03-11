@@ -1,19 +1,25 @@
+## Getting started
 
-## Getting Started
+Install dependencies with Node >= 18.17:
 
-First, run the development server:
+```bash
+npm install
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:300305](http://localhost:300305) with your browser to see the result.
+Open [http://localhost:300305](http://localhost:300305) with your browser to play 💣💣💣
 
-## Deploy on Vercel
+## Tech stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. NextJS / React
+1. Tailwind CSS
+1. Eslint
+1. Prettier
 
 ## Backlog
 
