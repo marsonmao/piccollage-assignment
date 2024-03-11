@@ -30,6 +30,6 @@ Holding the generic helpers for programming
 
 ### The routes
 
-Here we have `/classic` and `/ignite` (a flawed naming for Detonation game mode), each of them holds a `page` component and is the display layer of the game; it integrates the corresponding game rules, displays UIs and manage user and UI states
+Here we have `/classic` and `/detonation`, each of them holds a `page` component and is the display layer of the game; it integrates the corresponding game rules, displays UIs and manage user and UI states
 
 Note for the `page` components: because `mode` classes are framework agnostic, so in some coditions, we need to handle React component rerender explicitly

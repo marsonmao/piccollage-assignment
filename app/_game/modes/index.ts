@@ -1,2 +1,2 @@
 export * from "./classic";
-export * from "./ignite";
+export * from "./detonation";

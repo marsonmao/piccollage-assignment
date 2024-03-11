@@ -8,7 +8,7 @@ import {
   Link,
   Timer,
 } from "@/app/_components";
-import { Cell, MineData, MineSweeperIgniteMode } from "@/app/_game";
+import { Cell, MineData, MineSweeperDetonationMode } from "@/app/_game";
 import {
   boardCelebrationClasses,
   config,
@@ -24,8 +24,8 @@ import {
   useState,
 } from "react";
 
-const difficulties = config.ignite.boards;
-const headlines = config.ignite.headlines;
+const difficulties = config.detonation.boards;
+const headlines = config.detonation.headlines;
 
 export default function Home() {
   const [_, rerender] = useState(0);
@@ -37,7 +37,7 @@ export default function Home() {
 
   const game = useRef(
     (function create() {
-      const game = new MineSweeperIgniteMode({
+      const game = new MineSweeperDetonationMode({
         onGameWon: () => {
           setHeadlineText(headlines.won);
           setIsEnded(true);
