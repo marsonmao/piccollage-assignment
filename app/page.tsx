@@ -8,7 +8,7 @@ export default function Home() {
       <h1 className="m-2">Select mode</h1>
       <div className="w-full flex justify-center items-center flex-col gap-1">
         <Link href="/classic">Classic</Link>
-        <Link href="/ignite">Ignite</Link>
+        <Link href="/detonation">Detonation</Link>
       </div>
     </div>
   );

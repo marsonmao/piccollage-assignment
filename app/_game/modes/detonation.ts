@@ -1,7 +1,7 @@
 import type { Cell } from "../core";
 import { CellState, MineData, MineSweeperCore } from "../core";
 
-export class MineSweeperIgniteMode {
+export class MineSweeperDetonationMode {
   private core: MineSweeperCore;
   private onGameWon: () => void;
   private onGameLost: () => void;
