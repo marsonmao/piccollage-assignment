@@ -33,6 +33,12 @@ export class MineSweeperCore {
   private flaggedCount: number = 0;
 
   constructor(props: { rowSize: number; columnSize: number }) {
+    if (props.rowSize <= 0 || props.columnSize <= 0) {
+      throw new Error(
+        `size is out of bound rowSize: ${props.rowSize} columnSize: ${props.columnSize}`,
+      );
+    }
+
     this.rowSize = props.rowSize;
     this.columnSize = props.columnSize;
 
