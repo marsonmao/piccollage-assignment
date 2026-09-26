@@ -24,3 +24,7 @@ Open [http://localhost:30305](http://localhost:30305) with your browser to play 
 ## Backlog
 
 - This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Security
+
+Dependencies are kept patched via `npm audit`. One known moderate/high advisory remains open in PostCSS, bundled transitively by Next.js; fixing it requires upgrading to Next.js 16 (a breaking change) and is tracked separately rather than forced in as part of a routine dependency bump.
