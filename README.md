@@ -1,6 +1,9 @@
 ## Play it live
 
-**[marsonmao.github.io/piccollage-assignment](https://marsonmao.github.io/piccollage-assignment/)** — auto-deployed from `main` via GitHub Actions on every push (see `.github/workflows/deploy-pages.yml`).
+The app is served from two independent sources, both auto-deployed from `main` on every push:
+
+- **[marsonmao.github.io/piccollage-assignment](https://marsonmao.github.io/piccollage-assignment/)** — static export published via GitHub Actions (see `.github/workflows/deploy-pages.yml`).
+- **[piccollage-assignment-marsonmaos-projects.vercel.app](https://piccollage-assignment-marsonmaos-projects.vercel.app/)** — built and hosted by Vercel via its GitHub App integration (configured in the Vercel dashboard, not tracked in this repo).
 
 ## Getting started
 
