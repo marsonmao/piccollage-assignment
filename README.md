@@ -1,3 +1,7 @@
+## Play it live
+
+**[marsonmao.github.io/piccollage-assignment](https://marsonmao.github.io/piccollage-assignment/)** — auto-deployed from `main` via GitHub Actions on every push (see `.github/workflows/deploy-pages.yml`).
+
 ## Getting started
 
 Install dependencies with Node >= 18.17:
